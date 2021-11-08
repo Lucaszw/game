@@ -1,6 +1,7 @@
 <script>
     import { onMount } from 'svelte';
 	import bluebird from 'bluebird';
+    import { setIntervalAsync } from 'set-interval-async/dynamic';
 
 	let context;
 	let key;
@@ -14,6 +15,10 @@
     function handleKeydown(event) {
 		key = event.key;
 	}
+
+    function handleKeyup(event) {
+        key = "";
+    }
 
 	function spritePositionToImagePosition(row, col) {
         // https://codehs.com/tutorial/andy/Programming_Sprites_in_JavaScript
@@ -39,26 +44,38 @@
 		async function drawImage() {
 			canvas.width = this.naturalWidth;
   			canvas.height = this.naturalHeight;
-			while (true) {
+			const loopSheet = async () => {
 				for (let i=0;i<2;i++){
 					for (let ii=0;ii<5;ii++) {
-						const position = spritePositionToImagePosition(i, ii);
-						context.resetTransform();
+						let position;
+                        
+                        if (key == "ArrowLeft" || key == "ArrowRight") {
+                            // Key is down, draw nexy frame
+                            context.resetTransform();
+                            position = spritePositionToImagePosition(i, ii);
+                        } else {
+                            // No key down, preserve direction, but draw resting sprite
+                            position = spritePositionToImagePosition(0, 0);
+                        }
+
 						if (key == "ArrowLeft") {
+                            // Invert image to appear walking left
 							context.translate(canvas.width, 0);
 							context.scale(-1, 1);
 						}
-						context.drawImage(this, position.x,position.y, SPRITE_WIDTH, SPRITE_HEIGHT, 0, 0, canvas.width, canvas.height);
-						await bluebird.delay(100);
+
+                        context.drawImage(this, position.x,position.y, SPRITE_WIDTH, SPRITE_HEIGHT, 0, 0, canvas.width, canvas.height);
+                        await bluebird.delay(100);
 					}
 				}
-			}
+			};
+            setIntervalAsync(loopSheet, 100);
 		}
 	});
 
 </script>
 
-<svelte:window on:keydown={handleKeydown}/>
+<svelte:window on:keydown={handleKeydown} on:keyup={handleKeyup}/>
 <canvas bind:this={canvas}></canvas>
 
 <style>
