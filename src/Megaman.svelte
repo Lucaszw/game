@@ -4,84 +4,184 @@
     import { setIntervalAsync } from 'set-interval-async/dynamic';
 
 	let context;
-	let key;
+	let key = null;
     let canvas;
+    let characterDirection;
+    let characterPosition = {x: 500, y: 200};
+    $: keyDown = (key != null);
+    $: isRunning = (keyDown == true && (key == "ArrowLeft" || key == "ArrowRight"));
+	$: outerWidth = 0;
+	$: innerWidth = 0;
+	$: outerHeight = 0;
+	$: innerHeight = 0;
 
-	const SPRITE_WIDTH = 110;
-	const SPRITE_HEIGHT = 116;
-	const BORDER_WIDTH = 0;
-	const SPACING_WIDTH = 0;
 
-    function handleKeydown(event) {
-		key = event.key;
-	}
-
-    function handleKeyup(event) {
-        key = "";
-    }
-
-	function spritePositionToImagePosition(row, col) {
+    function spritePositionToImagePosition(row, col, sprite) {
         // https://codehs.com/tutorial/andy/Programming_Sprites_in_JavaScript
 		return {
 			x: (
-				BORDER_WIDTH +
-				col * (SPACING_WIDTH + SPRITE_WIDTH)
+				sprite.BORDER_WIDTH +
+				col * (sprite.SPACING_WIDTH + sprite.SPRITE_WIDTH)
 			),
 			y: (
-				BORDER_WIDTH +
-				row * (SPACING_WIDTH + SPRITE_HEIGHT)
+				sprite.BORDER_WIDTH +
+				row * (sprite.SPACING_WIDTH + sprite.SPRITE_HEIGHT)
 			)
 		}
 	}
 
+    class Standing {
+        constructor() {
+            this.SPRITE_WIDTH = 46;
+            this.SPRITE_HEIGHT = 46;
+            this.BORDER_WIDTH = 0;
+            this.SPACING_WIDTH = 0;           
+        }
+
+        load() {
+            return new Promise((res, rej) => {
+                const image = new Image();
+                image.src = "/megaman/standing.png";
+                image.onload = drawImage;
+                const _this = this;
+                async function drawImage() {
+                    _this.image = this;
+                    res (this);
+                }
+            });
+        }
+
+        async draw() {
+			// canvas.width = this.image.naturalWidth;
+  			// canvas.height = this.image.naturalHeight;
+            context.resetTransform();
+            let x = characterPosition.x;
+
+            if (characterDirection == "left") {
+                // Invert image to appear walking left
+                // context.translate(characterPosition.x+150, 0);
+                context.scale(-1, 1);
+                x -= characterPosition.x*2 + 100;
+            }
+
+            context.clearRect(x,characterPosition.y,110,110);
+            context.drawImage(this.image, -10,-10, this.SPRITE_WIDTH, this.SPRITE_HEIGHT, x, characterPosition.y, 100, 100);
+        }
+    }
+
+    class Running {
+        constructor() {
+            this.SPRITE_WIDTH = 110;
+            this.SPRITE_HEIGHT = 116;
+            this.BORDER_WIDTH = 0;
+            this.SPACING_WIDTH = 0;
+            this.sheet = {
+                i: 0,
+                ii: 0
+            };
+        }
+
+        load() {
+            return new Promise((res, rej) => {
+                const image = new Image();
+                image.src = "/megaman/running.png";
+                image.onload = drawImage;
+
+                const _this = this;
+                async function drawImage() {
+                    _this.image = this;
+                    res (this);
+                }
+            });
+        }
+
+        async draw() {
+			// canvas.width = this.image.naturalWidth;
+  			// canvas.height = this.image.naturalHeight;            
+            let position;
+            let x = characterPosition.x;
+            context.resetTransform();
+
+            if (keyDown) {
+                // Key is down, draw next frame
+                position = spritePositionToImagePosition(this.sheet.i, this.sheet.ii, this);
+            } else {
+                // No key down, draw resting sprite
+                position = spritePositionToImagePosition(0, 0, this);
+            }
+
+            if (characterDirection == "left") {
+                // Invert image to appear walking left
+                // context.translate(characterPosition.x + 100, 0);
+                context.scale(-1, 1);
+                x -= characterPosition.x*2 + 100;
+            }
+            context.clearRect(x,characterPosition.y,110,110);
+            context.drawImage(this.image, position.x,position.y, this.SPRITE_WIDTH, this.SPRITE_HEIGHT, x, characterPosition.y, 100, 100);
+
+            this.incrementSheet();
+        }
+
+        incrementSheet() {
+            if (this.sheet.i >= 1 && this.sheet.ii >= 4) {
+                // End of sheet
+                this.sheet.i = 0;
+                this.sheet.ii = 0;
+            } else if (this.sheet.ii >= 4) {
+                // End of row
+                this.sheet.i += 1;
+                this.sheet.ii = 0;
+            } else {
+                // End of column
+                this.sheet.ii += 1;
+            }
+        }
+    }
+
+    let running = new Running();
+    let standing = new Standing();
+
+    function handleKeydown(event) {
+		key = event.key;
+        if (key == "ArrowLeft") characterDirection = "left";
+        if (key == "ArrowRight") characterDirection = "right";
+	}
+
+    function handleKeyup(event) {
+        key = null;
+    }
+
 	onMount(async () => {
+        canvas.setAttribute('width', innerWidth);
+        canvas.setAttribute('height', innerHeight);
 		context = canvas.getContext('2d', {alpha: true});
+        context.webkitImageSmoothingEnabled = false;
+        context.mozImageSmoothingEnabled = false;
+        context.imageSmoothingEnabled = false;
 
-		const image = new Image();
-		image.src = "/megaman.jpg";
-		image.onload = drawImage;
+        await running.load();
+        await standing.load();
 
-		async function drawImage() {
-			canvas.width = this.naturalWidth;
-  			canvas.height = this.naturalHeight;
-			const loopSheet = async () => {
-				for (let i=0;i<2;i++){
-					for (let ii=0;ii<5;ii++) {
-						let position;
-                        
-                        if (key == "ArrowLeft" || key == "ArrowRight") {
-                            // Key is down, draw nexy frame
-                            context.resetTransform();
-                            position = spritePositionToImagePosition(i, ii);
-                        } else {
-                            // No key down, preserve direction, but draw resting sprite
-                            position = spritePositionToImagePosition(0, 0);
-                        }
+        const loopSheet = async () => {
+            if (isRunning) running.draw();
+            if (!isRunning) standing.draw();
+        };
+        setIntervalAsync(loopSheet, 100);
 
-						if (key == "ArrowLeft") {
-                            // Invert image to appear walking left
-							context.translate(canvas.width, 0);
-							context.scale(-1, 1);
-						}
-
-                        context.drawImage(this, position.x,position.y, SPRITE_WIDTH, SPRITE_HEIGHT, 0, 0, canvas.width, canvas.height);
-                        await bluebird.delay(100);
-					}
-				}
-			};
-            setIntervalAsync(loopSheet, 100);
-		}
 	});
 
 </script>
 
-<svelte:window on:keydown={handleKeydown} on:keyup={handleKeyup}/>
-<canvas bind:this={canvas}></canvas>
+<svelte:window on:keydown={handleKeydown} on:keyup={handleKeyup} bind:innerWidth bind:outerWidth bind:innerHeight bind:outerHeight/>
+<canvas bind:this={canvas} ></canvas>
 
 <style>
     canvas {
-		image-rendering: pixelated;
-		width: 100px;
-		height: 100px;
+        position: fixed;
+        left: 0px;
+        top: 0px;
+        width: 100%;
+        height: 100%;
+        image-rendering: pixelated;
 	}
 </style>
