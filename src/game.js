@@ -10,6 +10,7 @@ export const pixelRatio = writable(window.devicePixelRatio);
 export const context = writable();
 export const canvas = writable();
 export const time = writable(0);
+export const colliders = writable([]);
 
 // A more convenient store for grabbing all game props
 export const props = deriveObject({
@@ -18,7 +19,8 @@ export const props = deriveObject({
 	width,
 	height,
 	pixelRatio,
-	time
+	time,
+    colliders
 });
 
 export const key = Symbol();

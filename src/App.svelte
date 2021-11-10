@@ -2,12 +2,14 @@
 	import Megaman from './Megaman.svelte';
 	import Background from './Background.svelte';
 	import Canvas from './Canvas.svelte';
+	import GroundCollider from './GroundCollider.svelte';
 </script>
 
 <main>
 	<Canvas>
-		<Megaman></Megaman>
 		<Background></Background>
+		<GroundCollider></GroundCollider>
+		<Megaman></Megaman>
 	</Canvas>
 </main>
 

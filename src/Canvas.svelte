@@ -8,6 +8,7 @@
 		height,
 		canvas as canvasStore,
 		context as contextStore,
+		colliders as collidersStore,
 		pixelRatio,
 		props,
 		time

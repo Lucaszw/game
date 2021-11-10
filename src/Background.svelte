@@ -5,7 +5,6 @@
     import { onMount } from 'svelte';
 
     let image;
-    let canvas, context;
 
     let loadBackground = async function () {
         return new Promise((res, rej) => {
@@ -23,13 +22,9 @@
     });
 
     renderable(props => {
-        canvas = props.canvas;
-        context = props.context;
-
+        const {canvas, context, width, height} = props;
         if (!image) return;
         
-        context.drawImage(image, 0, 0, image.width, image.height, 0, 0, canvas.width, canvas.height);
+        context.drawImage(image, 0, 0, image.width, image.height, 0, 0, width, height);
 	});
 </script>
-
-{@debug image}

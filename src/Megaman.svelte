@@ -6,6 +6,7 @@
 
     let context;
     let canvas;
+    let colliders;
 	let key = null;
     let characterDirection;
     let characterPosition = {x: 0, y: 100};
@@ -26,20 +27,13 @@
 		}
 	}
 
-    class Standing {
-        constructor() {
-            this.SPRITE_WIDTH = 46;
-            this.SPRITE_HEIGHT = 46;
-            this.BORDER_WIDTH = 0;
-            this.SPACING_WIDTH = 0;           
-        }
-
+    class MegamanAnimation {
         load() {
             if (this.image) return Promise.resolve();
 
             return new Promise((res, rej) => {
                 const image = new Image();
-                image.src = "/megaman/standing.png";
+                image.src = this.imageURL;
                 image.onload = drawImage;
                 const _this = this;
                 async function drawImage() {
@@ -49,12 +43,35 @@
             });
         }
 
+        checkCollision() {
+            for (let collider of colliders) {
+                if (collider.x1 > characterPosition.x+100) continue;
+                if (collider.x2 < characterPosition.x) continue;
+                if (collider.y1 > characterPosition.y+100) continue;
+                if (collider.y2 < characterPosition.y) continue;
+                return true;
+            }
+            return false;
+        }
+    }
+
+
+    class Standing extends MegamanAnimation {
+        constructor() {
+            super();
+            this.SPRITE_WIDTH = 46;
+            this.SPRITE_HEIGHT = 46;
+            this.BORDER_WIDTH = 0;
+            this.SPACING_WIDTH = 0;
+            this.imageURL = "/megaman/standing.png";         
+        }
+
         async draw() {
-			// canvas.width = this.image.naturalWidth;
-  			// canvas.height = this.image.naturalHeight;
             context.resetTransform();
             let x = characterPosition.x;
+            let colliding = this.checkCollision();
 
+            if (!colliding) characterPosition.y += 50;
             if (characterDirection == "left") {
                 // Invert image to appear walking left
                 // context.translate(characterPosition.x+150, 0);
@@ -62,13 +79,14 @@
                 x -= characterPosition.x*2 + 100;
             }
 
-            // context.clearRect(x,characterPosition.y,110,110);
             context.drawImage(this.image, -10,-10, this.SPRITE_WIDTH, this.SPRITE_HEIGHT, x, characterPosition.y, 100, 100);
+            context.resetTransform();
         }
     }
 
-    class Running {
+    class Running extends MegamanAnimation {
         constructor() {
+            super();
             this.SPRITE_WIDTH = 110;
             this.SPRITE_HEIGHT = 116;
             this.BORDER_WIDTH = 0;
@@ -77,27 +95,10 @@
                 i: 0,
                 ii: 0
             };
+            this.imageURL = "/megaman/running.png";
         }
 
-        load() {
-            if (this.image) return Promise.resolve();
-            
-            return new Promise((res, rej) => {
-                const image = new Image();
-                image.src = "/megaman/running.png";
-                image.onload = drawImage;
-
-                const _this = this;
-                async function drawImage() {
-                    _this.image = this;
-                    res (this);
-                }
-            });
-        }
-
-        async draw() {
-			// canvas.width = this.image.naturalWidth;
-  			// canvas.height = this.image.naturalHeight;            
+        async draw() {        
             let position;
             let x = characterPosition.x;
             context.resetTransform();
@@ -163,6 +164,8 @@
 
         canvas = props.canvas;
         context = props.context;
+        colliders = props.colliders;
+
 
         if (isRunning) running.draw();
         if (!isRunning) standing.draw();
