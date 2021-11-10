@@ -2,8 +2,7 @@
     import { onMount } from 'svelte';
 	import bluebird from 'bluebird';
     import { setIntervalAsync } from 'set-interval-async/dynamic';
-    import { props } from './game.js';
-
+    import { props, renderable } from './game.js';
 
     let context;
     let canvas;
@@ -36,6 +35,8 @@
         }
 
         load() {
+            if (this.image) return Promise.resolve();
+
             return new Promise((res, rej) => {
                 const image = new Image();
                 image.src = "/megaman/standing.png";
@@ -61,7 +62,7 @@
                 x -= characterPosition.x*2 + 100;
             }
 
-            context.clearRect(x,characterPosition.y,110,110);
+            // context.clearRect(x,characterPosition.y,110,110);
             context.drawImage(this.image, -10,-10, this.SPRITE_WIDTH, this.SPRITE_HEIGHT, x, characterPosition.y, 100, 100);
         }
     }
@@ -79,6 +80,8 @@
         }
 
         load() {
+            if (this.image) return Promise.resolve();
+            
             return new Promise((res, rej) => {
                 const image = new Image();
                 image.src = "/megaman/running.png";
@@ -112,9 +115,13 @@
                 // context.translate(characterPosition.x + 100, 0);
                 context.scale(-1, 1);
                 x -= characterPosition.x*2 + 100;
+                characterPosition.x -= 10;
+            } else {
+                characterPosition.x += 10;
             }
-            context.clearRect(x,characterPosition.y,110,110);
+            // context.clearRect(x,characterPosition.y,110,110);
             context.drawImage(this.image, position.x,position.y, this.SPRITE_WIDTH, this.SPRITE_HEIGHT, x, characterPosition.y, 100, 100);
+            context.resetTransform();
 
             this.incrementSheet();
         }
@@ -148,22 +155,18 @@
         key = null;
     }
 
-    onMount(async () => {
-        // canvas = canvasStore.get
-        props.subscribe((props) => {
-            canvas = props.canvas;
-            context = props.context;
-        });
 
+    renderable(async (props, dt) => {
         await running.load();
         await standing.load();
 
-        const loopSheet = async () => {
-            if (isRunning) running.draw();
-            if (!isRunning) standing.draw();
-        };
-        setIntervalAsync(loopSheet, 100);
-	});
+
+        canvas = props.canvas;
+        context = props.context;
+
+        if (isRunning) running.draw();
+        if (!isRunning) standing.draw();
+    })
 
 </script>
 

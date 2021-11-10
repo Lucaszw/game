@@ -1,7 +1,8 @@
+<!-- https://svelte.dev/repl/79f4f3e0296a403ea988f74d332a7a4a?version=3.12.1 -->
 <script>
-    import { onMount, onDestroy, setContext } from 'svelte';
+	import { onMount, onDestroy, setContext } from 'svelte';
 
-    import {
+	import {
 		key,
 		width,
 		height,
@@ -12,38 +13,104 @@
 		time
 	} from './game.js';
 
-    let canvas;
+	export let killLoopOnError = true;
+	export let attributes = {};
+	
+	let listeners = [];
+	let canvas;
 	let context;
-	$: outerWidth = 0;
-	$: innerWidth = 0;
-	$: outerHeight = 0;
-	$: innerHeight = 0;
+	let frame;
 
-    onMount(async () => {
-        canvas.setAttribute('width', innerWidth);
-        canvas.setAttribute('height', innerHeight);
-        canvasStore.set(canvas);
-        
-		context = canvas.getContext('2d', {alpha: true});
-        context.webkitImageSmoothingEnabled = false;
-        context.mozImageSmoothingEnabled = false;
-        context.imageSmoothingEnabled = false;
-        contextStore.set(context);
-    });
+	onMount(() => {
+		// prepare canvas stores
+		context = canvas.getContext('2d', attributes);
+		canvasStore.set(canvas);
+		contextStore.set(context);
 
+		// setup entities
+		listeners.forEach(async entity => {
+			if (entity.setup) {
+				let p = entity.setup($props);
+				if (p && p.then) await p;
+			}
+			entity.ready = true;
+		});
+		
+		// start game loop
+		return createLoop((elapsed, dt) => {
+			time.set(elapsed);
+			render(dt);
+		});
+	});
+	
+	setContext(key, {
+		add (fn) {
+			this.remove(fn);
+			listeners.push(fn);
+		},
+		remove (fn) {
+			const idx = listeners.indexOf(fn);
+			if (idx >= 0) listeners.splice(idx, 1);
+		}
+	});
+	
+	function render (dt) {
+		context.save();
+		context.scale($pixelRatio, $pixelRatio);
+		listeners.forEach(entity => {
+			try {
+				if (entity.mounted && entity.ready && entity.render) {
+					entity.render($props, dt);
+				}
+			} catch (err) {
+				console.error(err);
+				if (killLoopOnError) {
+					cancelAnimationFrame(frame);
+					console.warn('Animation loop stopped due to an error');
+				}
+			}
+		});
+		context.restore();
+	}
+	
+	function handleResize () {
+		width.set(window.innerWidth);
+		height.set(window.innerHeight);
+		pixelRatio.set(window.devicePixelRatio);
+	}
+	
+	function createLoop (fn) {
+		let elapsed = 0;
+		let lastTime = performance.now();
+		(function loop() {
+			frame = requestAnimationFrame(loop);
+			const beginTime = performance.now();
+			const dt = (beginTime - lastTime) / 1000;
+			lastTime = beginTime;
+			elapsed += dt;
+			fn(elapsed, dt);
+		})();
+		return () => {
+			cancelAnimationFrame(frame);
+		};
+	}
 </script>
 
-<canvas bind:this={canvas} ></canvas>
-<svelte:window bind:innerWidth bind:outerWidth bind:innerHeight bind:outerHeight/>
+<canvas
+	bind:this={canvas}
+	width={$width * $pixelRatio}
+	height={$height * $pixelRatio}
+	style="width: {$width}px; height: {$height}px;"
+/>
+<svelte:window on:resize|passive={handleResize} />
+<slot></slot>
 
 <style>
     canvas {
-        position: fixed;
-        left: 0px;
+        padding: 0px;
+        margin: 0px;
+        position: absolute;
         top: 0px;
-        width: 100%;
-        height: 100%;
-        image-rendering: pixelated;
-	}
+        left: 0px;
+    }
 </style>
-<slot></slot>

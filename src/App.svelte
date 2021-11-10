@@ -1,11 +1,13 @@
 <script>
 	import Megaman from './Megaman.svelte';
+	import Background from './Background.svelte';
 	import Canvas from './Canvas.svelte';
 </script>
 
 <main>
 	<Canvas>
 		<Megaman></Megaman>
+		<Background></Background>
 	</Canvas>
 </main>
 
