@@ -1,11 +1,12 @@
 <script>
-	export let name;
-
 	import Megaman from './Megaman.svelte';
+	import Canvas from './Canvas.svelte';
 </script>
 
 <main>
-	<Megaman></Megaman>
+	<Canvas>
+		<Megaman></Megaman>
+	</Canvas>
 </main>
 
 <style>

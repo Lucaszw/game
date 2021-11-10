@@ -2,19 +2,16 @@
     import { onMount } from 'svelte';
 	import bluebird from 'bluebird';
     import { setIntervalAsync } from 'set-interval-async/dynamic';
+    import { props } from './game.js';
 
-	let context;
-	let key = null;
+
+    let context;
     let canvas;
+	let key = null;
     let characterDirection;
-    let characterPosition = {x: 500, y: 200};
+    let characterPosition = {x: 0, y: 100};
     $: keyDown = (key != null);
     $: isRunning = (keyDown == true && (key == "ArrowLeft" || key == "ArrowRight"));
-	$: outerWidth = 0;
-	$: innerWidth = 0;
-	$: outerHeight = 0;
-	$: innerHeight = 0;
-
 
     function spritePositionToImagePosition(row, col, sprite) {
         // https://codehs.com/tutorial/andy/Programming_Sprites_in_JavaScript
@@ -151,13 +148,12 @@
         key = null;
     }
 
-	onMount(async () => {
-        canvas.setAttribute('width', innerWidth);
-        canvas.setAttribute('height', innerHeight);
-		context = canvas.getContext('2d', {alpha: true});
-        context.webkitImageSmoothingEnabled = false;
-        context.mozImageSmoothingEnabled = false;
-        context.imageSmoothingEnabled = false;
+    onMount(async () => {
+        // canvas = canvasStore.get
+        props.subscribe((props) => {
+            canvas = props.canvas;
+            context = props.context;
+        });
 
         await running.load();
         await standing.load();
@@ -167,21 +163,8 @@
             if (!isRunning) standing.draw();
         };
         setIntervalAsync(loopSheet, 100);
-
 	});
 
 </script>
 
-<svelte:window on:keydown={handleKeydown} on:keyup={handleKeyup} bind:innerWidth bind:outerWidth bind:innerHeight bind:outerHeight/>
-<canvas bind:this={canvas} ></canvas>
-
-<style>
-    canvas {
-        position: fixed;
-        left: 0px;
-        top: 0px;
-        width: 100%;
-        height: 100%;
-        image-rendering: pixelated;
-	}
-</style>
+<svelte:window on:keydown={handleKeydown} on:keyup={handleKeyup}/>
