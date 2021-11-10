@@ -80,12 +80,16 @@
 		pixelRatio.set(window.devicePixelRatio);
 	}
 	
+    
 	function createLoop (fn) {
 		let elapsed = 0;
 		let lastTime = performance.now();
+        let counter = 0;
 		(function loop() {
+            counter ++;
 			frame = requestAnimationFrame(loop);
-			const beginTime = performance.now();
+			if (counter % 2 != 0) return;
+            const beginTime = performance.now();
 			const dt = (beginTime - lastTime) / 1000;
 			lastTime = beginTime;
 			elapsed += dt;

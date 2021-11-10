@@ -102,6 +102,8 @@
             let position;
             let x = characterPosition.x;
             context.resetTransform();
+            let colliding = this.checkCollision();
+            if (!colliding) characterPosition.y += 50;
 
             if (keyDown) {
                 // Key is down, draw next frame
@@ -156,11 +158,9 @@
         key = null;
     }
 
-
     renderable(async (props, dt) => {
         await running.load();
         await standing.load();
-
 
         canvas = props.canvas;
         context = props.context;
