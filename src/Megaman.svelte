@@ -1,17 +1,25 @@
 <script>
-    import { onMount } from 'svelte';
-	import bluebird from 'bluebird';
-    import { setIntervalAsync } from 'set-interval-async/dynamic';
-    import { props, renderable } from './game.js';
-
+    import { renderable } from './game.js';
+    import _ from "lodash";
     let context;
     let canvas;
     let colliders;
-	let key = null;
+	let keys = [];
     let characterDirection;
     let characterPosition = {x: 0, y: 100};
-    $: keyDown = (key != null);
-    $: isRunning = (keyDown == true && (key == "ArrowLeft" || key == "ArrowRight"));
+    $: keyDown = (keys.length > 0);
+    $: isRunning = (keyDown == true && (_.includes(keys, "a") || _.includes(keys, "d")));
+
+    let jumpingTime = 0;
+    const vf = 20;
+    const characterVelocity = {x: 0, y: () => {
+        if (jumpingTime > vf || jumpingTime == 0 ) {
+            jumpingTime = 0;
+            return -vf;
+        }
+        jumpingTime ++;
+        return vf - jumpingTime;
+    }}
 
     function spritePositionToImagePosition(row, col, sprite) {
         // https://codehs.com/tutorial/andy/Programming_Sprites_in_JavaScript
@@ -43,18 +51,47 @@
             });
         }
 
-        checkCollision() {
-            for (let collider of colliders) {
-                if (collider.x1 > characterPosition.x+100) continue;
-                if (collider.x2 < characterPosition.x) continue;
-                if (collider.y1 > characterPosition.y+100) continue;
-                if (collider.y2 < characterPosition.y) continue;
+        static checkCollision() {
+            let isInCollider = (collider) => {
+                if (collider.x1 > characterPosition.x+50) return false;
+                if (collider.x2 < characterPosition.x+50) return false;
+                if (collider.y1 > characterPosition.y+100) return false;
+                if (collider.y2 < characterPosition.y) return false;
                 return true;
             }
-            return false;
+            for (let collider of colliders) {
+                if (!isInCollider(collider)) continue
+                if (collider.y1 <= characterPosition.y+100) return {hit: true, collider};
+                if (collider.y2 >= characterPosition.y+100) return {hit: true, collider};
+            }
+            return {hit: false};
         }
     }
 
+    class Jumping extends MegamanAnimation {
+        constructor() {
+            super();
+            this.SPRITE_WIDTH = 46;
+            this.SPRITE_HEIGHT = 46;
+            this.BORDER_WIDTH = 0;
+            this.SPACING_WIDTH = 0;
+            this.imageURL = "/megaman/jumping.png";         
+        }
+
+        async draw() {
+            let x = characterPosition.x;
+
+            if (characterDirection == "left") {
+                // Invert image to appear walking left
+                // context.translate(characterPosition.x+150, 0);
+                context.scale(-1, 1);
+                x -= characterPosition.x*2 + 100;
+            }
+
+            context.drawImage(this.image, -10,-10, this.SPRITE_WIDTH, this.SPRITE_HEIGHT, x, characterPosition.y, 100, 100);
+            context.resetTransform();
+        }
+    }
 
     class Standing extends MegamanAnimation {
         constructor() {
@@ -67,11 +104,8 @@
         }
 
         async draw() {
-            context.resetTransform();
             let x = characterPosition.x;
-            let colliding = this.checkCollision();
 
-            if (!colliding) characterPosition.y += 50;
             if (characterDirection == "left") {
                 // Invert image to appear walking left
                 // context.translate(characterPosition.x+150, 0);
@@ -101,10 +135,6 @@
         async draw() {        
             let position;
             let x = characterPosition.x;
-            context.resetTransform();
-            let colliding = this.checkCollision();
-            if (!colliding) characterPosition.y += 50;
-
             if (keyDown) {
                 // Key is down, draw next frame
                 position = spritePositionToImagePosition(this.sheet.i, this.sheet.ii, this);
@@ -118,9 +148,6 @@
                 // context.translate(characterPosition.x + 100, 0);
                 context.scale(-1, 1);
                 x -= characterPosition.x*2 + 100;
-                characterPosition.x -= 10;
-            } else {
-                characterPosition.x += 10;
             }
             // context.clearRect(x,characterPosition.y,110,110);
             context.drawImage(this.image, position.x,position.y, this.SPRITE_WIDTH, this.SPRITE_HEIGHT, x, characterPosition.y, 100, 100);
@@ -147,28 +174,49 @@
 
     let running = new Running();
     let standing = new Standing();
+    let jumping = new Jumping();
 
     function handleKeydown(event) {
-		key = event.key;
-        if (key == "ArrowLeft") characterDirection = "left";
-        if (key == "ArrowRight") characterDirection = "right";
+        const newKey = event.key;
+        keys = [...keys, newKey];
+
+        if (newKey == "w") {
+            if (jumpingTime <= 0) {
+                jumpingTime = 1;
+                characterPosition.y -= 1;
+            }
+        }
+
+        if (newKey == "a") characterDirection = "left";
+        if (newKey == "d") characterDirection = "right";
 	}
 
     function handleKeyup(event) {
-        key = null;
+        const oldKey = event.key;
+        keys = [..._.without(keys, oldKey)]
     }
 
     renderable(async (props, dt) => {
         await running.load();
         await standing.load();
+        await jumping.load();
 
         canvas = props.canvas;
         context = props.context;
         colliders = props.colliders;
 
+        context.resetTransform();
+        let collision = MegamanAnimation.checkCollision();
+        let v = characterVelocity.y();
+        if (!collision.hit) characterPosition.y -= v;
+        if (collision.hit)characterPosition.y = collision.collider.y1-100;
+        
+        if (!collision.hit) jumping.draw()
 
-        if (isRunning) running.draw();
-        if (!isRunning) standing.draw();
+        if (isRunning && characterDirection == "left") characterPosition.x -= 10;
+        if (isRunning && characterDirection == "right") characterPosition.x += 10;
+        if (isRunning && collision.hit) running.draw();
+        if (!isRunning && collision.hit) standing.draw();
     })
 
 </script>

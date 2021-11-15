@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "bluebird": "^3.7.2",
+    "lodash": "^4.17.21",
     "set-interval-async": "^2.0.3",
     "sirv-cli": "^1.0.0"
   }
