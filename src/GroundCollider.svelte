@@ -8,14 +8,14 @@
     let canvas, context;
 
     class LineCollider {
-        constructor(x1, y1, x2, y2) {
-            if (x1 > x2) throw "x1 must be less than x2";
-            if (y1 > y2) throw "y1 must be less than y2";
+        constructor(x1, y1, width, height) {
+            if (width <= 0) throw "width must be > 0";
+            if (height <= 0) throw "height must be > 0";
 
             this.x1 = x1;
-            this.x2 = x2;
+            this.x2 = x1 + width;
             this.y1 = y1;
-            this.y2 = y2;
+            this.y2 = y1 + height;
 
             $collidersStore = [...$collidersStore, this];
 
@@ -35,14 +35,16 @@
     }
 
 
-    let line1 = new LineCollider(0,500,300,550);
-    let line2 = new LineCollider(200,800,900,850);
+    let line1 = new LineCollider(0,500,300,50);
+    let line2 = new LineCollider(200,800,700,50);
+    let line3 = new LineCollider(900,700,700,50);
 
     renderable(props => {
         canvas = props.canvas;
         context = props.context; 
         line1.draw();
         line2.draw();
+        line3.draw();
 
 	});
 </script>

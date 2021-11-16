@@ -13,7 +13,8 @@
     let jumpingTime = 0;
     const vf = 20;
     const characterVelocity = {x: 0, y: () => {
-        if (jumpingTime > vf || jumpingTime == 0 ) {
+        const v = vf - jumpingTime;
+        if (v <= -20  || jumpingTime == 0 ) {
             jumpingTime = 0;
             return -vf;
         }
@@ -61,8 +62,12 @@
             }
             for (let collider of colliders) {
                 if (!isInCollider(collider)) continue
-                if (collider.y1 <= characterPosition.y+100) return {hit: true, collider};
-                if (collider.y2 >= characterPosition.y+100) return {hit: true, collider};
+                let characterBottom = characterPosition.y+100;
+                let characterMidpoint = characterPosition.y+80;
+                let characterTop = characterPosition.y;
+
+                if (collider.y1 <= characterBottom && collider.y1 > characterMidpoint) return {hit: true, region: "top", y: collider.y1 - 100};
+                if (collider.y2 >= characterTop && collider.y2 < characterBottom ) return {hit: true, region: "bottom", y: collider.y2};
             }
             return {hit: false};
         }
@@ -208,15 +213,15 @@
         context.resetTransform();
         let collision = MegamanAnimation.checkCollision();
         let v = characterVelocity.y();
-        if (!collision.hit) characterPosition.y -= v;
-        if (collision.hit)characterPosition.y = collision.collider.y1-100;
+        if (!collision.hit || collision.region != "top") characterPosition.y -= v;
+        if (collision.hit && collision.region == "top")characterPosition.y = collision.y;
         
-        if (!collision.hit) jumping.draw()
-
         if (isRunning && characterDirection == "left") characterPosition.x -= 10;
         if (isRunning && characterDirection == "right") characterPosition.x += 10;
-        if (isRunning && collision.hit) running.draw();
-        if (!isRunning && collision.hit) standing.draw();
+        
+        if (!collision.hit || collision.region != "top") jumping.draw()
+        if (isRunning && collision.hit && collision.region == "top") running.draw();
+        if (!isRunning && collision.hit && collision.region == "top") standing.draw();
     })
 
 </script>
