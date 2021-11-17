@@ -7,7 +7,9 @@ class Standing extends MegamanAnimation {
         this.SPRITE_HEIGHT = 46;
         this.BORDER_WIDTH = 0;
         this.SPACING_WIDTH = 0;
-        this.imageURL = "/megaman/standing.png";         
+        this.imageURLS = [
+            {url: "/megaman/standing.png", name: "standing"}
+        ];
     }
 
     async draw(characterPosition, characterDirection) {
@@ -20,7 +22,7 @@ class Standing extends MegamanAnimation {
             x -= characterPosition.x*2 + 100;
         }
 
-        this.context.drawImage(this.image, -10,-10, this.SPRITE_WIDTH, this.SPRITE_HEIGHT, x, characterPosition.y, 100, 100);
+        this.context.drawImage(this.images["standing"].image, -10,-10, this.SPRITE_WIDTH, this.SPRITE_HEIGHT, x, characterPosition.y, 100, 100);
         this.context.resetTransform();
     }
 }

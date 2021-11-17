@@ -12,7 +12,8 @@
     let characterDirection;
     let characterPosition = {x: 0, y: 100};
     let jumpingTime = 0;
-    
+    let isShooting = false;
+
     $: keyDown = (keys.length > 0);
     $: collision = MegamanAnimation.checkCollision(colliders, characterPosition);
     $: characterVelocity = {
@@ -39,11 +40,13 @@
 
         if (newKey == "a") characterDirection = "left";
         if (newKey == "d") characterDirection = "right";
+        if (newKey == " ") isShooting = true;
 	}
 
     function handleKeyup(event) {
         const oldKey = event.key;
         keys = [..._.without(keys, oldKey)]
+        if (oldKey == " ") isShooting = false;
     }
 
     renderable(async (props, dt) => {
@@ -66,7 +69,7 @@
         if (isMovingRight) characterPosition.x += 10;
         
         if (isFallingOrJumping) jumping.draw(characterPosition, characterDirection);
-        if (isRunning && !isFallingOrJumping) running.draw(characterPosition, characterDirection);
+        if (isRunning && !isFallingOrJumping) running.draw(characterPosition, characterDirection, isShooting);
         if (!isRunning && !isFallingOrJumping) standing.draw(characterPosition, characterDirection);
     })
 
