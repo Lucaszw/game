@@ -4,6 +4,10 @@ import resolve from '@rollup/plugin-node-resolve';
 import livereload from 'rollup-plugin-livereload';
 import { terser } from 'rollup-plugin-terser';
 import css from 'rollup-plugin-css-only';
+import { babel } from '@rollup/plugin-babel';
+import alias from '@rollup/plugin-alias';
+
+import path from 'path';
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -37,11 +41,20 @@ export default {
 		file: 'public/build/bundle.js'
 	},
 	plugins: [
+		alias({
+			entries: [
+			  { find: 'src', replacement: path.resolve(__dirname, './src') }
+			]
+		}),
 		svelte({
 			compilerOptions: {
 				// enable run-time checks when not in production
 				dev: !production
 			}
+		}),
+		babel({
+			extensions: ['.js', '.mjs', '.html', '.svelte'],
+			include: ['src/**', 'node_modules/svelte/**'],
 		}),
 		// we'll extract any component CSS out into
 		// a separate file - better for performance

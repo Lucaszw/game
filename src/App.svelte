@@ -1,5 +1,5 @@
 <script>
-	import Megaman from './Megaman.svelte';
+	import Megaman from './characters/megaman/Megaman.svelte';
 	import Background from './Background.svelte';
 	import Canvas from './Canvas.svelte';
 	import GroundCollider from './GroundCollider.svelte';
