@@ -12,7 +12,7 @@
 
     let colliders = [];
 	let keys = [];
-    let characterDirection;
+    let characterDirection = {x: "right", y: "down"};
     let characterPosition = {x: 0, y: 100};
     let jumpingTime = 0;
     let isShooting = false;
@@ -27,8 +27,8 @@
     // Character state
     $: isRunning = (keyDown == true && (_.includes(keys, "a") || _.includes(keys, "d")));
     $: isFallingOrJumping = !collision.hit || collision.region != "top";
-    $: isMovingLeft = isRunning && characterDirection == "left";
-    $: isMovingRight = isRunning && characterDirection == "right";
+    $: isMovingLeft = isRunning && characterDirection.x == "left";
+    $: isMovingRight = isRunning && characterDirection.x == "right";
 
     function handleKeydown(event) {
         const newKey = event.key;
@@ -41,8 +41,8 @@
             }
         }
 
-        if (newKey == "a") characterDirection = "left";
-        if (newKey == "d") characterDirection = "right";
+        if (newKey == "a") characterDirection.x = "left";
+        if (newKey == "d") characterDirection.x = "right";
         if (newKey == " ") isShooting = true;
 	}
 
@@ -63,7 +63,7 @@
         let v = characterVelocity.y;
 
         jumpingTime = (v == -MegamanAnimation.vf) ? 0 : MegamanAnimation.vf - v;
-
+        characterDirection.y = (v < 0) ? "down" : "up";
         if (isFallingOrJumping) characterPosition.y -= v;
         if (!isFallingOrJumping) characterPosition.y = collision.y;
         
@@ -79,5 +79,5 @@
 
 <svelte:window on:keydown={handleKeydown} on:keyup={handleKeyup}/>
 
-<BulletController bullet={bullet} startX={characterPosition.x+((characterDirection == "left") ? 0 : 100)} startY={characterPosition.y+45} direction={characterDirection}></BulletController>
+<BulletController bullet={bullet} startX={characterPosition.x+((characterDirection.x == "left") ? 0 : 100)} startY={characterPosition.y+45} direction={characterDirection}></BulletController>
 <BoxCollider name={"megaman"} x1={characterPosition.x} y1={characterPosition.y} width={100} height={100}></BoxCollider>

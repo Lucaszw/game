@@ -1,6 +1,7 @@
 <script>
     import { renderable } from 'src/game.js';
-
+    import _ from "lodash";
+    
     let bullets = [];
     let colliders = [];
 
@@ -11,7 +12,7 @@
     function handleKeyup(event) {
         const oldKey = event.key;
         if (oldKey == " ") {
-            bullets.push({instance: bullet, x: startX, y: startY, direction});
+            bullets.push({instance: bullet, x: startX, y: startY, direction: _.clone(direction)});
         }
     }
 
@@ -27,7 +28,7 @@
         for (let _bullet of bullets) {
             // console.log("drawing", _bullet);
             _bullet.instance.draw(_bullet.x, _bullet.y);
-            _bullet.x += (_bullet.direction == "left") ? -20 : 20;
+            _bullet.x += (_bullet.direction.x == "left") ? -20 : 20;
         }
         // await running.load(context);
         // await standing.load(context);
