@@ -10,10 +10,12 @@
     export let y1;
     export let width;
     export let height;
+    export let showBoundaries;
 
     class BoxCollider {
-        constructor() {
+        constructor(showBoundaries = true) {
             $collidersStore = [...$collidersStore, this];
+            this.showBoundaries = showBoundaries;
         }
 
         get x1() {return x1}
@@ -27,15 +29,16 @@
             context.resetTransform();
             context.beginPath();
             context.rect(x1, y1, width, height);
-            context.fillStyle = "green";
-            context.fill();
-            // context.fillRect(this.x1, this.y1, this.width(), this.height());
+            if (this.showBoundaries) {
+                context.fillStyle = "green";
+                context.fill();
+            }
         }
     }
 
     renderable(props => {
         context = props.context;
-        if (!collider) collider = new BoxCollider(x1, y1, width, height);
+        if (!collider) collider = new BoxCollider(showBoundaries);
         collider.draw(x1, y1, width, height);
 	});
 </script>

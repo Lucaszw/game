@@ -70,7 +70,7 @@
         if (isMovingLeft) characterPosition.x -= 10;
         if (isMovingRight) characterPosition.x += 10;
         
-        if (isFallingOrJumping) jumping.draw(characterPosition, characterDirection);
+        if (isFallingOrJumping) jumping.draw(characterPosition, characterDirection, isShooting);
         if (isRunning && !isFallingOrJumping) running.draw(characterPosition, characterDirection, isShooting);
         if (!isRunning && !isFallingOrJumping) standing.draw(characterPosition, characterDirection, isShooting);
     })
@@ -80,4 +80,4 @@
 <svelte:window on:keydown={handleKeydown} on:keyup={handleKeyup}/>
 
 <BulletController bullet={bullet} startX={characterPosition.x+((characterDirection.x == "left") ? 0 : 100)} startY={characterPosition.y+45} direction={characterDirection}></BulletController>
-<BoxCollider name={"megaman"} x1={characterPosition.x} y1={characterPosition.y} width={100} height={100}></BoxCollider>
+<BoxCollider showBoundaries={false} name={"megaman"} x1={characterPosition.x} y1={characterPosition.y} width={100} height={100}></BoxCollider>

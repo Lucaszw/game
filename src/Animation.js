@@ -37,7 +37,6 @@ class Animation {
         })));
 
         this.images = _.keyBy(await Promise.all(promises), "name");
-        console.log("images: ", this.images)
         return this.images;
     }
 

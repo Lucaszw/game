@@ -22,13 +22,47 @@ class Jumping extends MegamanAnimation {
                 spacingWidth: 0,
                 rows: 1,
                 columns: 1 
+            },
+            {
+                url: "/megaman/jumping-up-gun.png", 
+                name: "jumping-up-gun",
+                spriteWidth: 46,
+                spriteHeight: 46,
+                borderWidth: 0,
+                spacingWidth: 0,
+                rows: 1,
+                columns: 1 
+            },
+            {
+                url: "/megaman/jumping-down-gun.png", 
+                name: "jumping-down-gun",
+                spriteWidth: 46,
+                spriteHeight: 46,
+                borderWidth: 0,
+                spacingWidth: 0,
+                rows: 1,
+                columns: 1 
             }
         ];
     }
 
-    async draw(characterPosition, characterDirection) {
+    async draw(characterPosition, characterDirection, showGun=false) {
         let x = characterPosition.x;
-        const image = this.images[(characterDirection.y == "up") ? "jumping" : "jumping-down"];
+        let imageName;
+        if (characterDirection.y == "up" && showGun) {
+            imageName = "jumping-up-gun";
+        }
+        if (characterDirection.y == "up" && !showGun) {
+            imageName = "jumping";
+        }
+        if (characterDirection.y == "down" && showGun) {
+            imageName = "jumping-down-gun";
+        }
+        if (characterDirection.y == "down" && !showGun) {
+            imageName = "jumping-down";
+        }
+        const image = this.images[imageName];
+
         if (characterDirection.x == "left") {
             // Invert image to appear walking left
             // context.translate(characterPosition.x+150, 0);
