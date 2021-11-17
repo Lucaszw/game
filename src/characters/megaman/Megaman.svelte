@@ -2,10 +2,13 @@
     import { renderable } from 'src/game.js';
     import _ from "lodash";
     import MegamanAnimation from './MegamanAnimation.js';
+    import BulletController from "src/weapons/bullets/BulletController.svelte";
+    import BoxCollider from "src/colliders/BoxCollider.svelte";
 
     import jumping from './animations/jumping';
     import running from './animations/running';
     import standing from './animations/standing';
+    import bullet from "./artillery/bullet";
 
     let colliders = [];
 	let keys = [];
@@ -53,7 +56,6 @@
         let {canvas, context} = props;
         colliders = props.colliders;
         context.resetTransform();
-
         await running.load(context);
         await standing.load(context);
         await jumping.load(context);
@@ -76,3 +78,6 @@
 </script>
 
 <svelte:window on:keydown={handleKeydown} on:keyup={handleKeyup}/>
+
+<BulletController bullet={bullet} startX={characterPosition.x+((characterDirection == "left") ? 0 : 100)} startY={characterPosition.y+50} direction={characterDirection}></BulletController>
+<BoxCollider name={"megaman"} x1={characterPosition.x} y1={characterPosition.y} width={100} height={100}></BoxCollider>

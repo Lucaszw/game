@@ -1,11 +1,13 @@
 import _ from "lodash";
-import Animation from "src/Animation.js";
 
-class MegamanAnimation extends Animation {
-    static vf = 20;
-    static name = "megaman";
+class Animation {
+    static name = "animation";
     constructor() {
-        super();
+        this.images = [];
+        this.sheet = {
+            i: 0,
+            ii: 0
+        };
     }
 
     async load(context) {
@@ -84,19 +86,36 @@ class MegamanAnimation extends Animation {
         }
     }
 
-    static characterVelocityX() {
+    static checkCollision(colliders, characterPosition) {
+        let isInCollider = (collider) => {
+            if (collider.name == this.name) return false;
+            // console.log(collider.name, this.name)
+            if (collider.x1 > characterPosition.x+50) return false;
+            if (collider.x2 < characterPosition.x+50) return false;
+            if (collider.y1 > characterPosition.y+100) return false;
+            if (collider.y2 < characterPosition.y) return false;
+            return true;
+        }
+        for (let collider of colliders) {
+            if (!isInCollider(collider)) continue
+            let characterBottom = characterPosition.y+100;
+            let characterMidpoint = characterPosition.y+80;
+            let characterTop = characterPosition.y;
+
+            if (collider.y1 <= characterBottom && collider.y1 > characterMidpoint) return {hit: true, region: "top", y: collider.y1 - 100};
+            if (collider.y2 >= characterTop && collider.y2 < characterBottom ) return {hit: true, region: "bottom", y: collider.y2};
+        }
+        return {hit: false};
+    }
+    
+    static characterVelocityX(...args) {
         return 0;
     }
 
-    static characterVelocityY(jumpingTime) {
-        const v = MegamanAnimation.vf - jumpingTime;
-        if (v <= -20  || jumpingTime == 0 ) {
-            jumpingTime = 0;
-            return -MegamanAnimation.vf;
-        }
-        jumpingTime ++;
-        return MegamanAnimation.vf - jumpingTime;
+    static characterVelocityY(...args) {
+        return 0;
     }
+
 }
 
-export default MegamanAnimation;
+export default Animation;
