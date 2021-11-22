@@ -1,4 +1,4 @@
-import Animation from "src/Animation";
+import Animation from "src/engine/Animation";
 
 class Bullet extends Animation {
     constructor() {

@@ -1,5 +1,5 @@
 <script>
-    import { renderable } from 'src/game.js';
+    import { renderable } from 'src/store.js';
     import _ from "lodash";
     
     let bullets = [];

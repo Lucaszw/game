@@ -1,8 +1,8 @@
 <script>
-	import Megaman from './characters/megaman/Megaman.svelte';
-	import Background from './Background.svelte';
-	import Canvas from './Canvas.svelte';
-	import GroundCollider from './GroundCollider.svelte';
+	import Megaman from './engine/characters/megaman/Megaman.svelte';
+	import Background from './engine/Background.svelte';
+	import Canvas from './engine/Canvas.svelte';
+	import GroundCollider from './engine/GroundCollider.svelte';
 </script>
 
 <main>

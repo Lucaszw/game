@@ -1,5 +1,5 @@
 <script>
-    import { props, renderable, colliders as collidersStore } from 'src/game.js';
+    import { props, renderable, colliders as collidersStore } from 'src/store.js';
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store'
 

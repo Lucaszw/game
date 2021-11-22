@@ -11,6 +11,7 @@ export const context = writable();
 export const canvas = writable();
 export const time = writable(0);
 export const colliders = writable([]);
+export const socket = writable();
 
 // A more convenient store for grabbing all game props
 export const props = deriveObject({

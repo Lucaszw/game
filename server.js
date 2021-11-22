@@ -8,7 +8,7 @@ const _ = require('lodash');
 const {wrap} = require('./router/utils');
 
 app.get('/', wrap ((req, res) => {
-    return "1"
+    return 1
 }));
 
 io.on('connection', (socket) => {

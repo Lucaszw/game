@@ -1,7 +1,7 @@
 <!-- Background from: https://imgur.com/t/super_nintendo/xAPngrS -->
 
 <script>
-    import { props, renderable } from './game.js';
+    import { props, renderable } from '../store.js';
     import { onMount } from 'svelte';
 
     let image;

@@ -12,7 +12,7 @@
 		pixelRatio,
 		props,
 		time
-	} from './game.js';
+	} from '../store.js';
 
 	export let killLoopOnError = true;
 	export let attributes = {};

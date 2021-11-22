@@ -1,9 +1,9 @@
 <script>
-    import { renderable } from 'src/game.js';
+    import { renderable } from 'src/store.js';
     import _ from "lodash";
     import MegamanAnimation from './MegamanAnimation.js';
-    import BulletController from "src/weapons/bullets/BulletController.svelte";
-    import BoxCollider from "src/colliders/BoxCollider.svelte";
+    import BulletController from "src/engine/weapons/bullets/BulletController.svelte";
+    import BoxCollider from "src/engine/colliders/BoxCollider.svelte";
 
     import jumping from './animations/jumping';
     import running from './animations/running';

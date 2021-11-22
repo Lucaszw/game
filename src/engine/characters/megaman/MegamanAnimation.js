@@ -1,5 +1,5 @@
 import _ from "lodash";
-import Animation from "src/Animation.js";
+import Animation from "src/engine/Animation.js";
 
 class MegamanAnimation extends Animation {
     static vf = 20;
