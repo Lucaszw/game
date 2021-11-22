@@ -12,6 +12,7 @@ export const canvas = writable();
 export const time = writable(0);
 export const colliders = writable([]);
 export const socket = writable();
+export const players = writable([]);
 
 // A more convenient store for grabbing all game props
 export const props = deriveObject({
@@ -21,7 +22,8 @@ export const props = deriveObject({
 	height,
 	pixelRatio,
 	time,
-    colliders
+    colliders,
+	players
 });
 
 export const key = Symbol();

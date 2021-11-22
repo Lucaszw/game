@@ -48,5 +48,23 @@ module.exports = {
         }
     },
     getAllFiles: getAllFiles,
-    isAuth: isAuth
+    isAuth: isAuth,
+    errorHandler: function(error, req, res, next) {
+      if(res.headersSent) return;
+    
+      res.status(500);
+      res.setHeader('Content-Type', 'application/json');
+    
+      if (!error.type && !error.errors && !error.message) {
+          error = {name: "SimpleError", errors: [{message: error}]};
+      } else if (!error.type && !error.errors) {
+          error = {name: "GenericError", errors: [{message: error.message}]};
+      }
+    
+      _.forEach(_.get(error, "errors"), (err) => {
+          console.error(_.get(err, "message"));
+      });
+    
+      res.json(error);
+    }
 };
