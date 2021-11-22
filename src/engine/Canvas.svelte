@@ -22,7 +22,7 @@
 	let context;
 	let frame;
 
-	onMount(() => {
+	let elementReady = () => {
 		// prepare canvas stores
 		context = canvas.getContext('2d', attributes);
 		canvasStore.set(canvas);
@@ -37,6 +37,9 @@
 			entity.ready = true;
 		});
 		
+	}
+
+	onMount(() => {
 		// start game loop
 		return createLoop((elapsed, dt) => {
 			time.set(elapsed);
@@ -46,6 +49,7 @@
 	
 	setContext(key, {
 		add (fn) {
+			fn.elementReady = elementReady;
 			this.remove(fn);
 			listeners.push(fn);
 		},

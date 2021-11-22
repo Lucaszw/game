@@ -47,6 +47,8 @@ export const renderable = (render) => {
 	api.add(element);
 	onMount(() => {
 		element.mounted = true;
+		element.elementReady();
+		element.elementReady = null;
 		return () => {
 			api.remove(element);
 			element.mounted = false;

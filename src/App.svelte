@@ -11,7 +11,9 @@
 	<Canvas>
 		<Background></Background>
 		<GroundCollider></GroundCollider>
-		<Megaman></Megaman>
+		{#each $players as player}
+			<Megaman id="MEGAMAN"></Megaman>
+		{/each}
 	</Canvas>
 	<div class="player-list">
 		{#each $players as player}
