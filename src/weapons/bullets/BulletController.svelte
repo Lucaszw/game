@@ -26,13 +26,13 @@
         context.resetTransform();
         
         for (let _bullet of bullets) {
-            // console.log("drawing", _bullet);
             _bullet.instance.draw(_bullet.x, _bullet.y);
             _bullet.x += (_bullet.direction.x == "left") ? -20 : 20;
+            if (_bullet.x > canvas.width || _bullet.x < 0) {
+                _bullet.id = Math.random()*1e16
+                _.remove(bullets, b => (b.id == _bullet.id))
+            }
         }
-        // await running.load(context);
-        // await standing.load(context);
-        // await jumping.load(context);
     });
 
 </script>
