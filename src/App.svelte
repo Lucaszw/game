@@ -17,7 +17,7 @@
 	</Canvas>
 	<div class="player-list">
 		{#each $players as player}
-			{player} <br/>
+			<b class:selected="{player.isMyself}">{player.id}</b> <br/>
 		{/each}
 	</div>
 </main>
@@ -34,6 +34,9 @@
 		top: 0px;
 		left: 0px;
 		color: red;
+	}
+	.selected {
+		color: green;
 	}
 	@media (min-width: 640px) {
 		main {
