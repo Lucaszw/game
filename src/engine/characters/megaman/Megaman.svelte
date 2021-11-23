@@ -12,13 +12,13 @@
 
     let colliders = [];
 	let keys = [];
-    let characterDirection = {x: "right", y: "down"};
-    let characterPosition = {x: 0, y: 100};
     let jumpingTime = 0;
     let isShooting = false;
 
+    export let player;
+
     $: keyDown = (keys.length > 0);
-    $: collision = MegamanAnimation.checkCollision(colliders, characterPosition);
+    $: collision = MegamanAnimation.checkCollision(colliders, player);
     $: characterVelocity = {
         x: MegamanAnimation.characterVelocityX(),
         y: MegamanAnimation.characterVelocityY(jumpingTime)
@@ -27,8 +27,8 @@
     // Character state
     $: isRunning = (keyDown == true && (_.includes(keys, "a") || _.includes(keys, "d")));
     $: isFallingOrJumping = !collision.hit || collision.region != "top";
-    $: isMovingLeft = isRunning && characterDirection.x == "left";
-    $: isMovingRight = isRunning && characterDirection.x == "right";
+    $: isMovingLeft = isRunning && player.xDirection == "left";
+    $: isMovingRight = isRunning && player.xDirection == "right";
 
     function handleKeydown(event) {
         const newKey = event.key;
@@ -37,12 +37,12 @@
         if (newKey == "w") {
             if (jumpingTime <= 0) {
                 jumpingTime = 1;
-                characterPosition.y -= 1;
+                player.y -= 1;
             }
         }
 
-        if (newKey == "a") characterDirection.x = "left";
-        if (newKey == "d") characterDirection.x = "right";
+        if (newKey == "a") player.xDirection = "left";
+        if (newKey == "d") player.xDirection = "right";
         if (newKey == " ") isShooting = true;
 	}
 
@@ -59,25 +59,42 @@
         await running.load(context);
         await standing.load(context);
         await jumping.load(context);
-
+  
         let v = characterVelocity.y;
 
+        player.isRunning = isRunning;
+        player.isFallingOrJumping = isFallingOrJumping;
+        player.isShooting = isShooting
         jumpingTime = (v == -MegamanAnimation.vf) ? 0 : MegamanAnimation.vf - v;
-        characterDirection.y = (v < 0) ? "down" : "up";
-        if (isFallingOrJumping) characterPosition.y -= v;
-        if (!isFallingOrJumping) characterPosition.y = collision.y;
-        
-        if (isMovingLeft) characterPosition.x -= 10;
-        if (isMovingRight) characterPosition.x += 10;
-        
-        if (isFallingOrJumping) jumping.draw(characterPosition, characterDirection, isShooting);
-        if (isRunning && !isFallingOrJumping) running.draw(characterPosition, characterDirection, isShooting);
-        if (!isRunning && !isFallingOrJumping) standing.draw(characterPosition, characterDirection, isShooting);
+        player.yDirection = (v < 0) ? "down" : "up";
+
+        if (isFallingOrJumping) {
+            player.y -= v;
+        }
+        if (!isFallingOrJumping) {
+            player.y = collision.y;
+        }
+        // console.log(player.y);
+        if (isMovingLeft) player.x -= 10;
+        if (isMovingRight) player.x += 10;
+
+        if (isFallingOrJumping) jumping.draw(player, isShooting);
+        if (isRunning && !isFallingOrJumping) running.draw(player, isShooting);
+        if (!isRunning && !isFallingOrJumping) standing.draw(player, isShooting);
     })
 
 </script>
 
 <svelte:window on:keydown={handleKeydown} on:keyup={handleKeyup}/>
 
-<BulletController bullet={bullet} startX={characterPosition.x+((characterDirection.x == "left") ? 0 : 100)} startY={characterPosition.y+45} direction={characterDirection}></BulletController>
-<BoxCollider showBoundaries={false} name={"megaman"} x1={characterPosition.x} y1={characterPosition.y} width={100} height={100}></BoxCollider>
+<BulletController 
+    player={player}
+    bullet={bullet}
+    leftOffset={0}
+    rightOffset={100}
+    topOffset={45}
+    startX={player.x}
+    startY={player.y}
+    direction={player.xDirection}
+></BulletController>
+<BoxCollider showBoundaries={true} name={"megaman"} x1={player.x} y1={player.y} width={100} height={100}></BoxCollider>

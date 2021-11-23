@@ -20,7 +20,7 @@ app.get('/users', wrap (async (rew, res) => {
 
 app.use(errorHandler);
 
-server.listen(5001, () => {
-  console.log('listening on *:5001');
+server.listen(5002, () => {
+  console.log('listening on *:5002');
 });
 

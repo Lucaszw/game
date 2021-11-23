@@ -6,7 +6,8 @@ import { terser } from 'rollup-plugin-terser';
 import css from 'rollup-plugin-css-only';
 import { babel } from '@rollup/plugin-babel';
 import alias from '@rollup/plugin-alias';
-
+import replace from '@rollup/plugin-replace';
+import ip from 'ip'
 import path from 'path';
 
 const production = !process.env.ROLLUP_WATCH;
@@ -41,6 +42,9 @@ export default {
 		file: 'public/build/bundle.js'
 	},
 	plugins: [
+		replace({
+			'process.env.HOST': JSON.stringify(ip.address())
+		}),
 		alias({
 			entries: [
 			  { find: 'src', replacement: path.resolve(__dirname, './src') }

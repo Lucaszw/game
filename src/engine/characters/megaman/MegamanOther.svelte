@@ -1,0 +1,30 @@
+<script>
+    import { renderable } from 'src/store.js';
+    import _ from "lodash";
+    import MegamanAnimation from './MegamanAnimation.js';
+    import BulletController from "src/engine/weapons/bullets/BulletController.svelte";
+    import BoxCollider from "src/engine/colliders/BoxCollider.svelte";
+
+    import jumping from './animations/jumping';
+    import running from './animations/running';
+    import standing from './animations/standing';
+    import bullet from "./artillery/bullet";
+
+    export let player;
+
+    renderable(async (props, dt) => {
+        let {canvas, context} = props;
+
+        await running.load(context);
+        await standing.load(context);
+        await jumping.load(context);
+        
+        const isShooting = player.isShooting;
+        const isRunning = player.isRunning;
+        const isFallingOrJumping = player.isFallingOrJumping;
+
+        if (isFallingOrJumping) jumping.draw(player, isShooting);
+        if (isRunning && !isFallingOrJumping) running.draw(player, isShooting);
+        if (!isRunning && !isFallingOrJumping) standing.draw(player, isShooting);
+    })
+</script>

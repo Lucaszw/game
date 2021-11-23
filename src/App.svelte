@@ -1,5 +1,6 @@
 <script>
 	import Megaman from './engine/characters/megaman/Megaman.svelte';
+	import MegamanOther from './engine/characters/megaman/MegamanOther.svelte';
 	import Background from './engine/Background.svelte';
 	import Canvas from './engine/Canvas.svelte';
 	import GroundCollider from './engine/GroundCollider.svelte';
@@ -12,12 +13,16 @@
 		<Background></Background>
 		<GroundCollider></GroundCollider>
 		{#each $players as player}
-			<Megaman id="MEGAMAN"></Megaman>
+			{#if player.isMyself}
+				<Megaman {player}></Megaman>
+			{:else}
+				<MegamanOther {player}></MegamanOther>
+			{/if}
 		{/each}
 	</Canvas>
 	<div class="player-list">
 		{#each $players as player}
-			<b class:selected="{player.isMyself}">{player.id}</b> <br/>
+			<b class:selected={player.isMyself}>{player.id}</b> <br/>
 		{/each}
 	</div>
 </main>
