@@ -5,6 +5,16 @@ import {
 } from "../store.js";
 
 
+const playerProperties = {
+    x: 0,
+    y: 0,
+    xDirection: "left",
+    yDirection: "down",
+    isRunning: false,
+    isFallingOrJumping: false,
+    isShooting: false
+}
+
 class PlayerFactory {
     constructor(socket) {
         this.socket = socket;
@@ -13,20 +23,15 @@ class PlayerFactory {
     createPlayer(id) {
         let factory = this;
         let player;
-        player = new Proxy({
-            x: 0,
-            y: 0,
-            id: id,
-            xDirection: "left",
-            yDirection: "down",
-            isRunning: false,
-            isFallingOrJumping: true,
-            isShooting: false,
-            isMyself: this.socket.id == id,
+        let defaults = _.extend({
             fireBullet: (...args) => {
                 factory.fireBullet(...[player, ...args]);
-            }
-        }, {
+            },
+            isMyself: this.socket.id == id,
+            id: id
+        }, playerProperties);
+
+        player = new Proxy(defaults, {
             get: function (target, key) {
                 return target[key];
             },
@@ -104,13 +109,10 @@ class GameSocket {
     playerUpdated(p) {
         if (p.id == this.socket.id) return;
         const player = _.find(this.players, (_p) => _p.id === p.id);
-        player.x = p.x;
-        player.y = p.y;
-        player.xDirection = p.xDirection;
-        player.yDirection = p.yDirection;
-        player.isRunning = p.isRunning;
-        player.isFallingOrJumping = p.isFallingOrJumping;
-        player.isShooting = p.isShooting;
+        const keys = _.keys(playerProperties);
+        for (let key of keys) {
+            player[key] = p[key];
+        }
     }
 
 }

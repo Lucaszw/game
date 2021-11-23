@@ -31,7 +31,6 @@
             let bulletY = player.y + topOffset;
 
             bullets.push({instance: bullet, x: bulletX, y: bulletY, direction: player.xDirection});
-            console.log("Fired!", player);
         })
     });
 
