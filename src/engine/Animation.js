@@ -107,22 +107,22 @@ class Animation extends EE {
         }
     }
 
-    static checkCollisions(colliders, player) {
+    static checkCollisions(colliders, obj) {
         let collisions = [];
         let hitByCollider = (collider) => {
             if (collider.name != "bullet") return false;
-            if (collider.ownerId == player.id) return false;
-            if ( collider.x2 >= player.x && collider.x1 <= player.x+100 
-                && collider.y2 >= player.y && collider.y1 <= player.y+100) return true;
+            if (collider.ownerId == obj.id) return false;
+            if ( collider.x2 >= obj.x1 && collider.x1 <= obj.x1+100 
+                && collider.y2 >= obj.y1 && collider.y1 <= obj.y1+100) return true;
             return false;
         }
         let isInCollider = (collider) => {
             if (collider.name == this.name) return false;
             // console.log(collider.name, this.name)
-            if (collider.x1 > player.x+50) return false;
-            if (collider.x2 < player.x+50) return false;
-            if (collider.y1 > player.y+100) return false;
-            if (collider.y2 < player.y) return false;
+            if (collider.x1 > obj.x1+50) return false;
+            if (collider.x2 < obj.x1+50) return false;
+            if (collider.y1 > obj.y1+100) return false;
+            if (collider.y2 < obj.y1) return false;
             return true;
         }
         for (let collider of colliders) {
@@ -132,9 +132,9 @@ class Animation extends EE {
         }
         for (let collider of colliders) {
             if (!isInCollider(collider)) continue;
-            let characterBottom = player.y+100;
-            let characterMidpoint = player.y+80;
-            let characterTop = player.y;
+            let characterBottom = obj.y1+100;
+            let characterMidpoint = obj.y1+80;
+            let characterTop = obj.y1;
 
             if (collider.y1 <= characterBottom && collider.y1 > characterMidpoint) collisions.push({hit: true, region: "top", y: collider.y1 - 100});
             if (collider.y2 >= characterTop && collider.y2 < characterBottom ) collisions.push({hit: true, region: "bottom", y: collider.y2}) ;

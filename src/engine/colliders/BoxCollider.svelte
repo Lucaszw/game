@@ -15,6 +15,8 @@
     export let showBoundaries;
     export let name;
     export let ownerId;
+    export let id;
+
     class BoxCollider {
         constructor(showBoundaries = true) {
             $collidersStore = [...$collidersStore, this];
@@ -22,6 +24,7 @@
         }
         get name() {return name}
         get ownerId() {return ownerId}
+        get id() {return id}
         get x1() {return x1}
         get y1() {return y1}
         get x2() {return x1 + width}
@@ -44,9 +47,9 @@
     }
 
     onDestroy(() => {
-        collider.id = Math.random()*1e16;
+        collider._id = Math.random()*1e16;
         _.remove($collidersStore, (c) => {
-           return c.id == collider.id;
+           return c._id == collider._id;
         });
         $collidersStore = [...$collidersStore];
 	});
@@ -57,3 +60,4 @@
         collider.draw(x1, y1, width, height);
 	});
 </script>
+<svelte:options accessors={true}/>

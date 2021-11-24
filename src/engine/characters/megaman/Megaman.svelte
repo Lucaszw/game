@@ -17,6 +17,8 @@
     let collisions = [];
 	let keys = [];
     let jumpingTime = 0;
+    let playerCollider;
+
     export let player;
 
     $: keyDown = (keys.length > 0);
@@ -71,8 +73,7 @@
 
     renderable(async (props, dt) => {
         let {canvas, context, colliders} = props;
-        // console.log(_.map(colliders, "name"))
-        collisions = MegamanAnimation.checkCollisions(colliders, player);
+        collisions = MegamanAnimation.checkCollisions(colliders, playerCollider);
         
         await running.load(context);
         await standing.load(context);
@@ -137,4 +138,4 @@
     startY={player.y}
     direction={player.xDirection}
 ></BulletController>
-<BoxCollider showBoundaries={false} name={"megaman"} x1={player.x} y1={player.y} width={100} height={100}></BoxCollider>
+<BoxCollider bind:this={playerCollider} id={player.id} showBoundaries={false} name={"megaman"} x1={player.x} y1={player.y} width={100} height={100}></BoxCollider>
