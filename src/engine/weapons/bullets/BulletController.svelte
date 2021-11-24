@@ -60,5 +60,5 @@
 <svelte:window on:keyup={handleKeyup}/>
 
 {#each bullets as bullet}
-    <BoxCollider ownerId={bullet.ownerId} showBoundaries={true} name={"bullet"} x1={bullet.x} y1={bullet.y} width={20} height={20}></BoxCollider>
+    <BoxCollider ownerId={bullet.ownerId} showBoundaries={false} name={"bullet"} x1={bullet.x} y1={bullet.y} width={20} height={20}></BoxCollider>
 {/each}

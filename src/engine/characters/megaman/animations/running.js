@@ -29,10 +29,10 @@ class Running extends MegamanAnimation {
         ]
     }
 
-    async draw(player, showGun=false) {
+    async draw(player) {
         let x = player.x;
         let y = player.y;
-        let image = this.images[showGun ? "running-gun" : "running"];
+        let image = this.images[player.isShooting ? "running-gun" : "running"];
         let sheet = this.getSheet(image);
         let position = MegamanAnimation.spriteCoordinates(sheet.i, sheet.ii, image);
         // let canvas = this.context.canvas;

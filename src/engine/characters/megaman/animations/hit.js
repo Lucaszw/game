@@ -20,7 +20,7 @@ class Hit extends MegamanAnimation {
         this.frameUpdateRate = 2;
     }
 
-    async draw(player, showGun=false) {
+    async draw(player) {
         let x = player.x;
         let y = player.y;
         let image = this.images["hit"];

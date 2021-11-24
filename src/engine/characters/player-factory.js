@@ -8,7 +8,9 @@ export const playerProperties = {
     isRunning: false,
     isFallingOrJumping: false,
     isShooting: false,
-    takingDamage: false
+    takingDamage: false,
+    isGuarding: false,
+    shieldHealth: 100
 }
 
 export class PlayerFactory {

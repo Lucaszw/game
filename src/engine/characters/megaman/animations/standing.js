@@ -33,9 +33,9 @@ class Standing extends MegamanAnimation {
         ]
     }
 
-    async draw(player, showGun=false) {
+    async draw(player) {
         let x = player.x;
-        let image = this.images[showGun ? "standing-gun" : "standing"];
+        let image = this.images[player.isShooting ? "standing-gun" : "standing"];
         let canvas = this.context.canvas;
         let scale = this.getScaleFactor();
 

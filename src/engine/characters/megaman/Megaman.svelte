@@ -9,15 +9,14 @@
     import running from './animations/running';
     import standing from './animations/standing';
     import hit from "./animations/hit";
-
+    import shield from "./artillery/shield";
     import bullet from "./artillery/bullet";
+
     import { onMount } from 'svelte';
 
     let collisions = [];
 	let keys = [];
     let jumpingTime = 0;
-    let isShooting = false;
-
     export let player;
 
     $: keyDown = (keys.length > 0);
@@ -45,19 +44,29 @@
 
         if (newKey == "a") player.xDirection = "left";
         if (newKey == "d") player.xDirection = "right";
-        if (newKey == " ") isShooting = true;
+        if (newKey == " ") {
+            player.isShooting = true;
+            player.isGuarding = false;
+        }
+        if (newKey == ",") {
+            player.isShooting = false;
+            player.isGuarding = true;
+        }
 	}
 
     function handleKeyup(event) {
         const oldKey = event.key;
         keys = [..._.without(keys, oldKey)]
-        if (oldKey == " ") isShooting = false;
+        if (oldKey == " ") player.isShooting = false;
+        if (oldKey == ",") player.isGuarding = false;
     }
 
     onMount(() => {
         hit.on("animation:ended", () => {
             player.takingDamage = false;
-        })
+        });
+        player.shieldHealth = 100;
+
     })
 
     renderable(async (props, dt) => {
@@ -69,13 +78,13 @@
         await standing.load(context);
         await jumping.load(context);
         await hit.load(context);
+        await shield.load(context);
         context.resetTransform();
 
         let v = characterVelocity.y;
 
         player.isRunning = isRunning;
         player.isFallingOrJumping = isFallingOrJumping;
-        player.isShooting = isShooting
         jumpingTime = (v == -MegamanAnimation.vf) ? 0 : MegamanAnimation.vf - v;
         player.yDirection = (v < 0) ? "down" : "up";
 
@@ -91,16 +100,27 @@
         if (isMovingRight) player.x += 10;
 
         if (_.find(collisions, c => (c.type == "bullet"))) {
-            player.takingDamage = true
+            if (!player.isGuarding || player.shieldHealth < 0) {
+                player.takingDamage = true
+            }
         }
 
         if (player.takingDamage == true) {
-            hit.draw(player, isShooting);
+            hit.draw(player);
             return;
         }
-        if (isFallingOrJumping) jumping.draw(player, isShooting);
-        if (isRunning && !isFallingOrJumping) running.draw(player, isShooting);
-        if (!isRunning && !isFallingOrJumping) standing.draw(player, isShooting);
+
+        if (isFallingOrJumping) jumping.draw(player);
+        if (isRunning && !isFallingOrJumping) running.draw(player);
+        if (!isRunning && !isFallingOrJumping) standing.draw(player);
+        if (player.isGuarding) {
+            if (player.shieldHealth > -50) {
+                player.shieldHealth -= 1;
+            }
+            shield.draw(player);
+        } else {
+            if (player.shieldHealth < 100) player.shieldHealth += 1;
+        }
     })
 
 </script>

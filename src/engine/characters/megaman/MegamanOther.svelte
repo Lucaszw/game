@@ -9,8 +9,7 @@
     import running from './animations/running';
     import standing from './animations/standing';
     import hit from './animations/hit';
-
-    import bullet from "./artillery/bullet";
+    import shield from './artillery/shield'
 
     export let player;
 
@@ -21,18 +20,23 @@
         await standing.load(context);
         await jumping.load(context);
         await hit.load(context);
-        const isShooting = player.isShooting;
+        await shield.load(context);
+        
         const isRunning = player.isRunning;
         const isFallingOrJumping = player.isFallingOrJumping;
 
         if (player.takingDamage == true) {
-            hit.draw(player, isShooting);
+            hit.draw(player);
             return;
         }
 
-        if (isFallingOrJumping) jumping.draw(player, isShooting);
-        if (isRunning && !isFallingOrJumping) running.draw(player, isShooting);
-        if (!isRunning && !isFallingOrJumping) standing.draw(player, isShooting);
+        if (isFallingOrJumping) jumping.draw(player);
+        if (isRunning && !isFallingOrJumping) running.draw(player);
+        if (!isRunning && !isFallingOrJumping) standing.draw(player);
+
+        if (player.isGuarding) {
+            shield.draw(player);
+        }
     })
 </script>
 

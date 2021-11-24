@@ -46,21 +46,21 @@ class Jumping extends MegamanAnimation {
         ];
     }
 
-    async draw(player, showGun=false) {
+    async draw(player) {
         let x = player.x;
         let imageName;
         let scale = this.getScaleFactor();
 
-        if (player.yDirection == "up" && showGun) {
+        if (player.yDirection == "up" && player.isShooting) {
             imageName = "jumping-up-gun";
         }
-        if (player.yDirection == "up" && !showGun) {
+        if (player.yDirection == "up" && !player.isShooting) {
             imageName = "jumping";
         }
-        if (player.yDirection == "down" && showGun) {
+        if (player.yDirection == "down" && player.isShooting) {
             imageName = "jumping-down-gun";
         }
-        if (player.yDirection == "down" && !showGun) {
+        if (player.yDirection == "down" && !player.isShooting) {
             imageName = "jumping-down";
         }
         const image = this.images[imageName];
