@@ -35,6 +35,11 @@ class Running extends MegamanAnimation {
         let image = this.images[showGun ? "running-gun" : "running"];
         let sheet = this.getSheet(image);
         let position = MegamanAnimation.spriteCoordinates(sheet.i, sheet.ii, image);
+        // let canvas = this.context.canvas;
+        let scale = this.getScaleFactor();
+
+        this.context.scale(scale/this.pixelsX, scale/this.pixelsY);
+
         if (player.xDirection == "left") {
             // Invert image to appear walking left
             // context.translate(characterPosition.x + 100, 0);

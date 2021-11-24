@@ -11,6 +11,8 @@ class Bullet extends Animation {
 
     draw(x, y) {
         const image = this.images["bullet"];
+        const scale = this.getScaleFactor();
+        this.context.scale(scale/this.pixelsX, scale/this.pixelsY);
         this.context.drawImage(
             image.image, 
             0,

@@ -103,23 +103,22 @@
 			cancelAnimationFrame(frame);
 		};
 	}
+
+	let padding = 10;
 </script>
 
 <canvas
 	bind:this={canvas}
-	width={$width * $pixelRatio}
-	height={$height * $pixelRatio}
-	style="width: {$width}px; height: {$height}px;"
+	width={$height * $pixelRatio - padding}
+	height={$height * $pixelRatio - padding}
+	style="width: {$height - 2*padding}px; height: {$height - 2*padding}px; padding: {padding}px"
 />
 <svelte:window on:resize|passive={handleResize} />
 <slot></slot>
 
 <style>
     canvas {
-        padding: 0px;
-        margin: 0px;
-        position: absolute;
-        top: 0px;
-        left: 0px;
+        margin: 0 auto;
+        position: relative;
     }
 </style>

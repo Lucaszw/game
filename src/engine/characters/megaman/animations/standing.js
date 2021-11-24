@@ -36,7 +36,10 @@ class Standing extends MegamanAnimation {
     async draw(player, showGun=false) {
         let x = player.x;
         let image = this.images[showGun ? "standing-gun" : "standing"];
+        let canvas = this.context.canvas;
+        let scale = this.getScaleFactor();
 
+        this.context.scale(scale/this.pixelsX, scale/this.pixelsY);
         if (player.xDirection == "left") {
             // Invert image to appear walking left
             // context.translate(characterPosition.x+150, 0);

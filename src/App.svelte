@@ -30,9 +30,9 @@
 <style>
 	main {
 		text-align: center;
-		padding: 1em;
-		max-width: 240px;
+		padding: 0px;
 		margin: 0 auto;
+		background: black;
 	}
 	.player-list {
 		position: fixed;
@@ -43,9 +43,5 @@
 	.selected {
 		color: green;
 	}
-	@media (min-width: 640px) {
-		main {
-			max-width: none;
-		}
-	}
+
 </style>

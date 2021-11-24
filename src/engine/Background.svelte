@@ -3,6 +3,7 @@
 <script>
     import { props, renderable } from '../store.js';
     import { onMount } from 'svelte';
+    import Animation from "./Animation"
 
     let image;
 
@@ -24,7 +25,10 @@
     renderable(props => {
         const {canvas, context, width, height} = props;
         if (!image) return;
-        
-        context.drawImage(image, 0, 0, image.width, image.height, 0, 0, width, height);
+        const scale = Animation.getScaleFactor(context);
+        context.resetTransform();
+        context.scale(scale/Animation.pixelsX, scale/Animation.pixelsY);
+        context.drawImage(image, 0, 0, image.width, image.height, 0, 0, 1000, 1000);
+        context.resetTransform();
 	});
 </script>

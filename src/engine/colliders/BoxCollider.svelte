@@ -1,5 +1,7 @@
 <script>
     import { renderable, colliders as collidersStore } from 'src/store.js';
+    import Animation from "../Animation";
+
     import { onDestroy } from 'svelte';
     import _ from "lodash";
 
@@ -28,13 +30,16 @@
         get height() {return height}
 
         draw() {
+            const scale = Animation.getScaleFactor(context);
             context.resetTransform();
             context.beginPath();
+            context.scale(scale/Animation.pixelsX, scale/Animation.pixelsY);
             context.rect(x1, y1, width, height);
             if (this.showBoundaries) {
                 context.fillStyle = "green";
                 context.fill();
             }
+            context.resetTransform();
         }
     }
 

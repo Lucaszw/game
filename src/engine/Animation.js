@@ -1,13 +1,20 @@
 import _ from "lodash";
 
+const PIXELS_X = 1000;
+const PIXELS_Y = 1000;
+
 class Animation {
     static name = "animation";
+    static pixelsX = PIXELS_X;
+    static pixelsY = PIXELS_Y;
     constructor() {
         this.images = [];
         this.sheet = {
             i: 0,
             ii: 0
         };
+        this.pixelsX = PIXELS_X;
+        this.pixelsY = PIXELS_Y;
     }
 
     async load(context) {
@@ -65,6 +72,19 @@ class Animation {
         this.sheet.i = 0;
         this.sheet.ii = 0;
         return this.sheet;
+    }
+
+    getScaleFactor(context) {
+        context = context || this.context;
+        const width  = context.canvas.width;
+        const height = context.canvas.height;        
+        return _.min([width, height]);
+    }
+
+    static getScaleFactor(context) {
+        const width  = context.canvas.width;
+        const height = context.canvas.height;      
+        return _.min([width, height]);
     }
 
     static spriteCoordinates(row, col, sprite) {

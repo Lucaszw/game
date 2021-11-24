@@ -49,6 +49,8 @@ class Jumping extends MegamanAnimation {
     async draw(player, showGun=false) {
         let x = player.x;
         let imageName;
+        let scale = this.getScaleFactor();
+
         if (player.yDirection == "up" && showGun) {
             imageName = "jumping-up-gun";
         }
@@ -62,6 +64,7 @@ class Jumping extends MegamanAnimation {
             imageName = "jumping-down";
         }
         const image = this.images[imageName];
+        this.context.scale(scale/this.pixelsX, scale/this.pixelsY);
 
         if (player.xDirection == "left") {
             // Invert image to appear walking left
