@@ -7,7 +7,8 @@ export const playerProperties = {
     yDirection: "down",
     isRunning: false,
     isFallingOrJumping: false,
-    isShooting: false
+    isShooting: false,
+    takingDamage: false
 }
 
 export class PlayerFactory {

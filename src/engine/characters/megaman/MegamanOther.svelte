@@ -8,6 +8,8 @@
     import jumping from './animations/jumping';
     import running from './animations/running';
     import standing from './animations/standing';
+    import hit from './animations/hit';
+
     import bullet from "./artillery/bullet";
 
     export let player;
@@ -18,10 +20,15 @@
         await running.load(context);
         await standing.load(context);
         await jumping.load(context);
-        
+        await hit.load(context);
         const isShooting = player.isShooting;
         const isRunning = player.isRunning;
         const isFallingOrJumping = player.isFallingOrJumping;
+
+        if (player.takingDamage == true) {
+            hit.draw(player, isShooting);
+            return;
+        }
 
         if (isFallingOrJumping) jumping.draw(player, isShooting);
         if (isRunning && !isFallingOrJumping) running.draw(player, isShooting);

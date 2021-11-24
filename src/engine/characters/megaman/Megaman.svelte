@@ -8,7 +8,10 @@
     import jumping from './animations/jumping';
     import running from './animations/running';
     import standing from './animations/standing';
+    import hit from "./animations/hit";
+
     import bullet from "./artillery/bullet";
+    import { onMount } from 'svelte';
 
     let collisions = [];
 	let keys = [];
@@ -51,16 +54,23 @@
         if (oldKey == " ") isShooting = false;
     }
 
+    onMount(() => {
+        hit.on("animation:ended", () => {
+            player.takingDamage = false;
+        })
+    })
+
     renderable(async (props, dt) => {
         let {canvas, context, colliders} = props;
         // console.log(_.map(colliders, "name"))
         collisions = MegamanAnimation.checkCollisions(colliders, player);
-
-        context.resetTransform();
+        
         await running.load(context);
         await standing.load(context);
         await jumping.load(context);
-  
+        await hit.load(context);
+        context.resetTransform();
+
         let v = characterVelocity.y;
 
         player.isRunning = isRunning;
@@ -76,10 +86,18 @@
             const collision = _.find(collisions, c => (c.region == "top"));
             player.y = collision.y;
         }
-        // console.log(player.y);
+
         if (isMovingLeft) player.x -= 10;
         if (isMovingRight) player.x += 10;
 
+        if (_.find(collisions, c => (c.type == "bullet"))) {
+            player.takingDamage = true
+        }
+
+        if (player.takingDamage == true) {
+            hit.draw(player, isShooting);
+            return;
+        }
         if (isFallingOrJumping) jumping.draw(player, isShooting);
         if (isRunning && !isFallingOrJumping) running.draw(player, isShooting);
         if (!isRunning && !isFallingOrJumping) standing.draw(player, isShooting);

@@ -6,15 +6,18 @@ class MegamanAnimation extends Animation {
     static name = "megaman";
     constructor() {
         super();
+        this.frameProgress = 0;
+        this.frameUpdateRate = 2;
     }
 
     incrementSheet(image) {
         const {rows, columns} = image;
-        
+        let ended = false;
         if (this.sheet.i >= rows-1 && this.sheet.ii >= columns-1) {
             // End of sheet
             this.sheet.i = 0;
             this.sheet.ii = 0;
+            ended = true;
         } else if (this.sheet.ii >= columns-1) {
             // End of row
             this.sheet.i += 1;
@@ -23,6 +26,7 @@ class MegamanAnimation extends Animation {
             // End of column
             this.sheet.ii += 1;
         }
+        return ended;
     }
 
     getSheet(image) {

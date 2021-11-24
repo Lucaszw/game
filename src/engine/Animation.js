@@ -1,13 +1,15 @@
 import _ from "lodash";
+import EE from "eventemitter3";
 
 const PIXELS_X = 1000;
 const PIXELS_Y = 1000;
 
-class Animation {
+class Animation extends EE {
     static name = "animation";
     static pixelsX = PIXELS_X;
     static pixelsY = PIXELS_Y;
     constructor() {
+        super();
         this.images = [];
         this.sheet = {
             i: 0,
