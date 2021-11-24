@@ -109,7 +109,8 @@ class Animation {
         let hitByCollider = (collider) => {
             if (collider.name != "bullet") return false;
             if (collider.ownerId == player.id) return false;
-            if (collider.x2 >= player.x && collider.x1  <= player.x+100 ) return true;
+            if ( collider.x2 >= player.x && collider.x1 <= player.x+100 
+                && collider.y2 >= player.y && collider.y1 <= player.y+100) return true;
             return false;
         }
         let isInCollider = (collider) => {
