@@ -98,4 +98,4 @@
     startY={player.y}
     direction={player.xDirection}
 ></BulletController>
-<BoxCollider showBoundaries={true} name={"megaman"} x1={player.x} y1={player.y} width={100} height={100}></BoxCollider>
+<BoxCollider showBoundaries={false} name={"megaman"} x1={player.x} y1={player.y} width={100} height={100}></BoxCollider>
