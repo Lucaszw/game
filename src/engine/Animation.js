@@ -96,7 +96,7 @@ class Animation {
             return true;
         }
         for (let collider of colliders) {
-            if (!isInCollider(collider)) continue
+            if (!isInCollider(collider)) continue;
             let characterBottom = characterPosition.y+100;
             let characterMidpoint = characterPosition.y+80;
             let characterTop = characterPosition.y;

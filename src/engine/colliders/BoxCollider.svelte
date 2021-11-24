@@ -1,7 +1,8 @@
 <script>
     import { props, renderable, colliders as collidersStore } from 'src/store.js';
-    import { onMount } from 'svelte';
-    import { writable } from 'svelte/store'
+    import { onMount, onDestroy } from 'svelte';
+    import { writable } from 'svelte/store';
+    import _ from "lodash";
 
     let context;
     let collider;
@@ -35,6 +36,14 @@
             }
         }
     }
+
+    onDestroy(() => {
+        collider.id = Math.random()*1e16;
+        _.remove($collidersStore, (c) => {
+           return c.id == collider.id;
+        });
+        $collidersStore = [...$collidersStore];
+	});
 
     renderable(props => {
         context = props.context;

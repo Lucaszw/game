@@ -1,5 +1,7 @@
 <script>
     import { renderable, socket as socketStore } from 'src/store.js';
+    import BoxCollider from "src/engine/colliders/BoxCollider.svelte"
+
     import _ from "lodash";
     
     let bullets = [];
@@ -19,7 +21,7 @@
         if (oldKey == " ") {
             let bulletX = (direction == "left") ? startX + leftOffset : startX + rightOffset;
             let bulletY = startY + topOffset;
-            bullets.push({instance: bullet, x: bulletX, y: bulletY, direction});
+            bullets = [...bullets, {instance: bullet, x: bulletX, y: bulletY, direction}];
             player.fireBullet();
         }
     }
@@ -30,7 +32,7 @@
             let bulletX = (player.xDirection == "left") ? player.x + leftOffset : player.x + rightOffset;
             let bulletY = player.y + topOffset;
 
-            bullets.push({instance: bullet, x: bulletX, y: bulletY, direction: player.xDirection});
+            bullets = [...bullets, {instance: bullet, x: bulletX, y: bulletY, direction: player.xDirection}];
         })
     });
 
@@ -38,7 +40,6 @@
         let {canvas, context} = props;
 
         await bullet.load(context);
-
 
         colliders = props.colliders;
         context.resetTransform();
@@ -51,8 +52,13 @@
                 _.remove(bullets, b => (b.id == _bullet.id))
             }
         }
+        bullets = [...bullets];
     });
 
 </script>
 
 <svelte:window on:keyup={handleKeyup}/>
+
+{#each bullets as bullet}
+    <BoxCollider showBoundaries={true} name={"bullet"} x1={bullet.x} y1={bullet.y} width={20} height={20}></BoxCollider>
+{/each}
