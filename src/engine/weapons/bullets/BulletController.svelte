@@ -21,7 +21,7 @@
         if (oldKey == " ") {
             let bulletX = (direction == "left") ? startX + leftOffset : startX + rightOffset;
             let bulletY = startY + topOffset;
-            bullets = [...bullets, {ownerId: player.id, instance: bullet, x: bulletX, y: bulletY, direction}];
+            bullets = [...bullets, {id: Math.random()*1e16, ownerId: player.id, instance: bullet, x: bulletX, y: bulletY, direction}];
             player.fireBullet();
         }
     }
@@ -36,6 +36,11 @@
         })
     });
 
+    const removeBullet = (_bullet) => {
+        _bullet.id = _bullet.id || Math.random()*1e16
+        _.remove(bullets, b => (b.id == _bullet.id))
+    }
+
     renderable(async (props, dt) => {
         let {canvas, context} = props;
 
@@ -49,8 +54,7 @@
             _bullet.instance.draw(_bullet.x, _bullet.y);
             _bullet.x += (_bullet.direction == "left") ? -20 : 20;
             if (_bullet.x > 1000 || _bullet.x < 0) {
-                _bullet.id = Math.random()*1e16
-                _.remove(bullets, b => (b.id == _bullet.id))
+                removeBullet(_bullet);
             }
         }
 
@@ -58,8 +62,9 @@
     });
 
     function handleCollision(event) {
-        console.log("bullet: ", event)
-        // alert("bullet collided!");
+        const {id} = event.detail;
+        removeBullet({id});
+        bullets = [...bullets];
     }
 
 </script>
@@ -67,5 +72,5 @@
 <svelte:window on:keyup={handleKeyup}/>
 
 {#each bullets as bullet}
-    <BoxCollider checkCollisions={true} on:collision={handleCollision} ownerId={bullet.ownerId} showBoundaries={false} name={"bullet"} x1={bullet.x} y1={bullet.y} width={20} height={20}></BoxCollider>
+    <BoxCollider id={bullet.id} checkCollisions={true} on:collision={handleCollision} ownerId={bullet.ownerId} showBoundaries={false} name={"bullet"} x1={bullet.x} y1={bullet.y} width={20} height={20}></BoxCollider>
 {/each}

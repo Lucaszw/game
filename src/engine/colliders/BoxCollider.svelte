@@ -7,7 +7,7 @@
     const dispatch = createEventDispatcher();
 
     let context;
-    let collider;
+    export let collider;
 
     export let checkCollisions = false;
     export let x1;
@@ -69,7 +69,7 @@
         if (checkCollisions) {
             const collisions = Animation.checkCollisions(colliders, collider);
             if (collisions.length > 0) {
-                dispatch('collision', collisions);
+                dispatch('collision', {collisions, id});
             }
         }
 	});

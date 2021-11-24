@@ -73,7 +73,9 @@
 
     renderable(async (props, dt) => {
         let {canvas, context, colliders} = props;
-        collisions = MegamanAnimation.checkCollisions(colliders, playerCollider);
+        const collider = playerCollider.collider;
+
+        collisions = collider ?   MegamanAnimation.checkCollisions(colliders, collider) : [];
         
         await running.load(context);
         await standing.load(context);

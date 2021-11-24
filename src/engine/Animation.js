@@ -113,32 +113,30 @@ class Animation extends EE {
             if (collider.id == obj.id) return false;
             if (collider.name != "bullet") return false;
             if (collider.ownerId == obj.id) return false;
-            if ( collider.x2 >= obj.x1 && collider.x1 <= obj.x1+100 
-                && collider.y2 >= obj.y1 && collider.y1 <= obj.y1+100) return true;
+            if ( collider.x2 >= obj.x1 && collider.x1 <= obj.x2 
+                && collider.y2 >= obj.y1 && collider.y1 <= obj.y2) return true;
             return false;
         }
         let isInCollider = (collider) => {
             if (collider.name == obj.name) return false;
             if ((collider.id == obj.ownerId) && obj.ownerId) return false;
-            // console.log(collider.name, this.name)
-            if (collider.x1 > obj.x1+50) return false;
-            if (collider.x2 < obj.x1+50) return false;
-            if (collider.y1 > obj.y1+100) return false;
+            if (collider.x1 > obj.x1+obj.width/2) return false;
+            if (collider.x2 < obj.x1+obj.width/2) return false;
+            if (collider.y1 > obj.y2) return false;
             if (collider.y2 < obj.y1) return false;
             return true;
         }
         for (let collider of colliders) {
-            // console.log("name: "+collider.name)
             if (!hitByCollider(collider)) continue;
             collisions.push({id: collider.id, hit: true, region: "side", type: "bullet"});
         }
         for (let collider of colliders) {
             if (!isInCollider(collider)) continue;
-            let characterBottom = obj.y1+100;
-            let characterMidpoint = obj.y1+80;
+            let characterBottom = obj.y2;
+            let characterMidpoint = obj.y2*0.8;
             let characterTop = obj.y1;
 
-            if (collider.y1 <= characterBottom && collider.y1 > characterMidpoint) collisions.push({id: collider.id, hit: true, region: "top", y: collider.y1 - 100});
+            if (collider.y1 <= characterBottom && collider.y1 > characterMidpoint) collisions.push({id: collider.id, hit: true, region: "top", y: collider.y1 - obj.height});
             if (collider.y2 >= characterTop && collider.y2 < characterBottom ) collisions.push({id: collider.id, hit: true, region: "bottom", y: collider.y2}) ;
         }
         return collisions;
