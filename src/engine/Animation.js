@@ -52,11 +52,20 @@ class Animation extends EE {
 
     incrementSheet(image) {
         const {rows, columns} = image;
-        
+        let ended = false;
+
+        if (this.frameProgress != this.frameUpdateRate) {
+            this.frameProgress += 1;
+            return ended;
+        }
+
+        this.frameProgress = 0;
+
         if (this.sheet.i >= rows-1 && this.sheet.ii >= columns-1) {
             // End of sheet
             this.sheet.i = 0;
             this.sheet.ii = 0;
+            ended = true;
         } else if (this.sheet.ii >= columns-1) {
             // End of row
             this.sheet.i += 1;
@@ -65,6 +74,7 @@ class Animation extends EE {
             // End of column
             this.sheet.ii += 1;
         }
+        return ended;
     }
 
     getSheet(image) {
@@ -110,9 +120,16 @@ class Animation extends EE {
     static checkCollisions(colliders, obj) {
         let collisions = [];
         let hitByCollider = (collider) => {
-            if (collider.id == obj.id) return false;
-            if (collider.name != "bullet") return false;
-            if (collider.ownerId == obj.id) return false;
+            const isSelf = (collider.id == obj.id);
+            const isPlatform = (collider.name != "bullet" && collider.name != "megaman");
+            const isOwner = ((collider.id == obj.ownerId) && obj.ownerId);
+            const isChild = ((collider.ownerId == obj.id) && collider.ownerId);
+            const isSibling = ((collider.ownerId == obj.ownerId) && collider.ownerId);
+
+            if (isSelf) return false;
+            if (isPlatform) return false;
+            if (isOwner || isChild || isSibling) return false;
+
             if ( collider.x2 >= obj.x1 && collider.x1 <= obj.x2 
                 && collider.y2 >= obj.y1 && collider.y1 <= obj.y2) return true;
             return false;
@@ -128,7 +145,7 @@ class Animation extends EE {
         }
         for (let collider of colliders) {
             if (!hitByCollider(collider)) continue;
-            collisions.push({id: collider.id, hit: true, region: "side", type: "bullet"});
+            collisions.push({id: collider.id, hit: true, region: "side", name: collider.name});
         }
         for (let collider of colliders) {
             if (!isInCollider(collider)) continue;

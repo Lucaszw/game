@@ -51,14 +51,7 @@ class Hit extends MegamanAnimation {
         );
         this.context.resetTransform();
             
-        let ended = false;
-        if (this.frameProgress == this.frameUpdateRate) {
-            ended = this.incrementSheet(image);
-            this.frameProgress = 0;
-        } else {
-            this.frameProgress += 1;
-        }
-
+        const ended = this.incrementSheet(image);
         if (ended) {
             this.emit('animation:ended', {});
         }

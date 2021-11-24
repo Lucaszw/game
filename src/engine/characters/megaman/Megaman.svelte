@@ -10,8 +10,8 @@
     import standing from './animations/standing';
     import hit from "./animations/hit";
     import shield from "./artillery/shield";
-    import bullet from "./artillery/bullet";
-
+    import Bullet from "./artillery/bullet";
+    
     import { onMount } from 'svelte';
 
     let collisions = [];
@@ -75,7 +75,7 @@
         let {canvas, context, colliders} = props;
         const collider = playerCollider.collider;
 
-        collisions = collider ?   MegamanAnimation.checkCollisions(colliders, collider) : [];
+        collisions = collider ? MegamanAnimation.checkCollisions(colliders, collider) : [];
         
         await running.load(context);
         await standing.load(context);
@@ -102,7 +102,7 @@
         if (isMovingLeft) player.x -= 10;
         if (isMovingRight) player.x += 10;
 
-        if (_.find(collisions, c => (c.type == "bullet"))) {
+        if (_.find(collisions, c => (c.name == "bullet"))) {
             if (!player.isGuarding || player.shieldHealth < 0) {
                 player.takingDamage = true
             }
@@ -132,7 +132,7 @@
 
 <BulletController 
     player={player}
-    bullet={bullet}
+    Bullet={Bullet}
     leftOffset={0}
     rightOffset={100}
     topOffset={45}

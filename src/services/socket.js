@@ -14,7 +14,7 @@ class GameSocket {
 
         this.players = [];
         playerStore.subscribe((players) => {
-            this.players = players;
+            this.players = [...players];
         })
         this.socket.on('connect', function (...args) {
             console.log("Connected! ", args, this);
@@ -57,6 +57,7 @@ class GameSocket {
         for (let key of keys) {
             player[key] = p[key];
         }
+        playerStore.set(this.players);
     }
 
 }

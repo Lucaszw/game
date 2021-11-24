@@ -12,7 +12,7 @@
     export let leftOffset;
     export let rightOffset;
     export let topOffset;
-    export let bullet;
+    export let Bullet;
     export let direction;
     export let player;
 
@@ -21,40 +21,44 @@
         if (oldKey == " ") {
             let bulletX = (direction == "left") ? startX + leftOffset : startX + rightOffset;
             let bulletY = startY + topOffset;
+            let bullet = new Bullet();
             bullets = [...bullets, {id: Math.random()*1e16, ownerId: player.id, instance: bullet, x: bulletX, y: bulletY, direction}];
             player.fireBullet();
         }
     }
 
     socketStore.subscribe((gameSocket) => {
-        gameSocket.socket.on("bullet-fired", (player) => {
-            if (player.id == gameSocket.socket.id) return;
-            let bulletX = (player.xDirection == "left") ? player.x + leftOffset : player.x + rightOffset;
-            let bulletY = player.y + topOffset;
+        gameSocket.socket.on("bullet-fired", (player2) => {
+            if (player2.id == gameSocket.socket.id) return;
+            let bulletX = (player2.xDirection == "left") ? player2.x + leftOffset : player2.x + rightOffset;
+            let bulletY = player2.y + topOffset;
+            let bullet = new Bullet();
 
-            bullets = [...bullets, {ownerId: player.id, instance: bullet, x: bulletX, y: bulletY, direction: player.xDirection}];
+            bullets = [...bullets, {id: Math.random()*1e16, ownerId: player2.id, instance: bullet, x: bulletX, y: bulletY, direction: player2.xDirection}];
         })
     });
 
-    const removeBullet = (_bullet) => {
-        _bullet.id = _bullet.id || Math.random()*1e16
-        _.remove(bullets, b => (b.id == _bullet.id))
+    const removeBullet = (bullet) => {
+        bullet.id = bullet.id || Math.random()*1e16
+        _.remove(bullets, b => (b.id == bullet.id))
     }
 
     renderable(async (props, dt) => {
         let {canvas, context} = props;
 
-        await bullet.load(context);
-
         colliders = props.colliders;
         
         context.resetTransform();
         
-        for (let _bullet of bullets) {
-            _bullet.instance.draw(_bullet.x, _bullet.y);
-            _bullet.x += (_bullet.direction == "left") ? -20 : 20;
-            if (_bullet.x > 1000 || _bullet.x < 0) {
-                removeBullet(_bullet);
+        for (let bullet of bullets) {
+            await bullet.instance.load(context);
+            bullet.instance.draw(bullet.x, bullet.y, bullet.isExploding);
+
+            if (!bullet.isExploding) {
+                bullet.x += (bullet.direction == "left") ? -20 : 20;
+            }
+            if (bullet.x > 1000 || bullet.x < 0) {
+                removeBullet(bullet);
             }
         }
 
@@ -63,8 +67,14 @@
 
     function handleCollision(event) {
         const {id} = event.detail;
-        removeBullet({id});
-        bullets = [...bullets];
+        const bullet = _.find(bullets, {id});
+        if (!bullet) return;
+        bullet.isExploding = true;
+        bullet.instance.once("animation:ended", (...args) => {
+            removeBullet({id});
+            bullets = [...bullets];
+        })
+
     }
 
 </script>
