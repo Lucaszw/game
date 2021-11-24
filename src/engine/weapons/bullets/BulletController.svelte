@@ -42,23 +42,30 @@
         await bullet.load(context);
 
         colliders = props.colliders;
+        
         context.resetTransform();
         
         for (let _bullet of bullets) {
             _bullet.instance.draw(_bullet.x, _bullet.y);
             _bullet.x += (_bullet.direction == "left") ? -20 : 20;
-            if (_bullet.x > canvas.width || _bullet.x < 0) {
+            if (_bullet.x > 1000 || _bullet.x < 0) {
                 _bullet.id = Math.random()*1e16
                 _.remove(bullets, b => (b.id == _bullet.id))
             }
         }
+
         bullets = [...bullets];
     });
+
+    function handleCollision(event) {
+        console.log("bullet: ", event)
+        // alert("bullet collided!");
+    }
 
 </script>
 
 <svelte:window on:keyup={handleKeyup}/>
 
 {#each bullets as bullet}
-    <BoxCollider ownerId={bullet.ownerId} showBoundaries={false} name={"bullet"} x1={bullet.x} y1={bullet.y} width={20} height={20}></BoxCollider>
+    <BoxCollider checkCollisions={true} on:collision={handleCollision} ownerId={bullet.ownerId} showBoundaries={false} name={"bullet"} x1={bullet.x} y1={bullet.y} width={20} height={20}></BoxCollider>
 {/each}

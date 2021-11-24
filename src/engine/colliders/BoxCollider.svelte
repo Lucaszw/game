@@ -1,13 +1,15 @@
 <script>
     import { renderable, colliders as collidersStore } from 'src/store.js';
     import Animation from "../Animation";
-
-    import { onDestroy } from 'svelte';
+    import { onDestroy, createEventDispatcher } from 'svelte';
     import _ from "lodash";
+
+    const dispatch = createEventDispatcher();
 
     let context;
     let collider;
 
+    export let checkCollisions = false;
     export let x1;
     export let y1;
     export let width;
@@ -56,8 +58,20 @@
 
     renderable(props => {
         context = props.context;
+        const colliders = props.colliders;
+
         if (!collider) collider = new BoxCollider(showBoundaries);
-        collider.draw(x1, y1, width, height);
+
+        if (showBoundaries) {
+            collider.draw(x1, y1, width, height);
+        }
+
+        if (checkCollisions) {
+            const collisions = Animation.checkCollisions(colliders, collider);
+            if (collisions.length > 0) {
+                dispatch('collision', collisions);
+            }
+        }
 	});
 </script>
 <svelte:options accessors={true}/>

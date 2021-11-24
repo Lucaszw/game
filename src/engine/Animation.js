@@ -110,6 +110,7 @@ class Animation extends EE {
     static checkCollisions(colliders, obj) {
         let collisions = [];
         let hitByCollider = (collider) => {
+            if (collider.id == obj.id) return false;
             if (collider.name != "bullet") return false;
             if (collider.ownerId == obj.id) return false;
             if ( collider.x2 >= obj.x1 && collider.x1 <= obj.x1+100 
@@ -117,7 +118,8 @@ class Animation extends EE {
             return false;
         }
         let isInCollider = (collider) => {
-            if (collider.name == this.name) return false;
+            if (collider.name == obj.name) return false;
+            if ((collider.id == obj.ownerId) && obj.ownerId) return false;
             // console.log(collider.name, this.name)
             if (collider.x1 > obj.x1+50) return false;
             if (collider.x2 < obj.x1+50) return false;
@@ -128,7 +130,7 @@ class Animation extends EE {
         for (let collider of colliders) {
             // console.log("name: "+collider.name)
             if (!hitByCollider(collider)) continue;
-            collisions.push({hit: true, region: "side", type: "bullet"});
+            collisions.push({id: collider.id, hit: true, region: "side", type: "bullet"});
         }
         for (let collider of colliders) {
             if (!isInCollider(collider)) continue;
@@ -136,8 +138,8 @@ class Animation extends EE {
             let characterMidpoint = obj.y1+80;
             let characterTop = obj.y1;
 
-            if (collider.y1 <= characterBottom && collider.y1 > characterMidpoint) collisions.push({hit: true, region: "top", y: collider.y1 - 100});
-            if (collider.y2 >= characterTop && collider.y2 < characterBottom ) collisions.push({hit: true, region: "bottom", y: collider.y2}) ;
+            if (collider.y1 <= characterBottom && collider.y1 > characterMidpoint) collisions.push({id: collider.id, hit: true, region: "top", y: collider.y1 - 100});
+            if (collider.y2 >= characterTop && collider.y2 < characterBottom ) collisions.push({id: collider.id, hit: true, region: "bottom", y: collider.y2}) ;
         }
         return collisions;
     }
