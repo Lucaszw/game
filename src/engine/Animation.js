@@ -105,7 +105,8 @@ class Animation {
         }
     }
 
-    static checkCollision(colliders, player) {
+    static checkCollisions(colliders, player) {
+        let collisions = [];
         let hitByCollider = (collider) => {
             if (collider.name != "bullet") return false;
             if (collider.ownerId == player.id) return false;
@@ -125,7 +126,7 @@ class Animation {
         for (let collider of colliders) {
             // console.log("name: "+collider.name)
             if (!hitByCollider(collider)) continue;
-            return {hit: true, region: "side", type: "bullet"}
+            collisions.push({hit: true, region: "side", type: "bullet"});
         }
         for (let collider of colliders) {
             if (!isInCollider(collider)) continue;
@@ -133,10 +134,10 @@ class Animation {
             let characterMidpoint = player.y+80;
             let characterTop = player.y;
 
-            if (collider.y1 <= characterBottom && collider.y1 > characterMidpoint) return {hit: true, region: "top", y: collider.y1 - 100};
-            if (collider.y2 >= characterTop && collider.y2 < characterBottom ) return {hit: true, region: "bottom", y: collider.y2};
+            if (collider.y1 <= characterBottom && collider.y1 > characterMidpoint) collisions.push({hit: true, region: "top", y: collider.y1 - 100});
+            if (collider.y2 >= characterTop && collider.y2 < characterBottom ) collisions.push({hit: true, region: "bottom", y: collider.y2}) ;
         }
-        return {hit: false};
+        return collisions;
     }
     
     static characterVelocityX(...args) {

@@ -10,7 +10,7 @@
     import standing from './animations/standing';
     import bullet from "./artillery/bullet";
 
-    let collision = {};
+    let collisions = [];
 	let keys = [];
     let jumpingTime = 0;
     let isShooting = false;
@@ -25,7 +25,7 @@
 
     // Character state
     $: isRunning = (keyDown == true && (_.includes(keys, "a") || _.includes(keys, "d")));
-    $: isFallingOrJumping = !collision.hit || collision.region != "top";
+    $: isFallingOrJumping = (collisions.length == 0) || !_.find(collisions, (c) => (c.region == "top"));
     $: isMovingLeft = isRunning && player.xDirection == "left";
     $: isMovingRight = isRunning && player.xDirection == "right";
 
@@ -54,8 +54,8 @@
     renderable(async (props, dt) => {
         let {canvas, context, colliders} = props;
         // console.log(_.map(colliders, "name"))
-        collision = MegamanAnimation.checkCollision(colliders, player);
-        if (collision.type == "bullet")
+        collisions = MegamanAnimation.checkCollisions(colliders, player);
+
         context.resetTransform();
         await running.load(context);
         await standing.load(context);
@@ -73,6 +73,7 @@
             player.y -= v;
         }
         if (!isFallingOrJumping) {
+            const collision = _.find(collisions, c => (c.region == "top"));
             player.y = collision.y;
         }
         // console.log(player.y);
