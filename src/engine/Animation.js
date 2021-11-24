@@ -85,21 +85,32 @@ class Animation {
         }
     }
 
-    static checkCollision(colliders, characterPosition) {
+    static checkCollision(colliders, player) {
+        let hitByCollider = (collider) => {
+            if (collider.name != "bullet") return false;
+            if (collider.ownerId == player.id) return false;
+            if (collider.x2 >= player.x && collider.x1  <= player.x+100 ) return true;
+            return false;
+        }
         let isInCollider = (collider) => {
             if (collider.name == this.name) return false;
             // console.log(collider.name, this.name)
-            if (collider.x1 > characterPosition.x+50) return false;
-            if (collider.x2 < characterPosition.x+50) return false;
-            if (collider.y1 > characterPosition.y+100) return false;
-            if (collider.y2 < characterPosition.y) return false;
+            if (collider.x1 > player.x+50) return false;
+            if (collider.x2 < player.x+50) return false;
+            if (collider.y1 > player.y+100) return false;
+            if (collider.y2 < player.y) return false;
             return true;
         }
         for (let collider of colliders) {
+            // console.log("name: "+collider.name)
+            if (!hitByCollider(collider)) continue;
+            return {hit: true, region: "side", type: "bullet"}
+        }
+        for (let collider of colliders) {
             if (!isInCollider(collider)) continue;
-            let characterBottom = characterPosition.y+100;
-            let characterMidpoint = characterPosition.y+80;
-            let characterTop = characterPosition.y;
+            let characterBottom = player.y+100;
+            let characterMidpoint = player.y+80;
+            let characterTop = player.y;
 
             if (collider.y1 <= characterBottom && collider.y1 > characterMidpoint) return {hit: true, region: "top", y: collider.y1 - 100};
             if (collider.y2 >= characterTop && collider.y2 < characterBottom ) return {hit: true, region: "bottom", y: collider.y2};

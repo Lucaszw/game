@@ -21,7 +21,7 @@
         if (oldKey == " ") {
             let bulletX = (direction == "left") ? startX + leftOffset : startX + rightOffset;
             let bulletY = startY + topOffset;
-            bullets = [...bullets, {instance: bullet, x: bulletX, y: bulletY, direction}];
+            bullets = [...bullets, {ownerId: player.id, instance: bullet, x: bulletX, y: bulletY, direction}];
             player.fireBullet();
         }
     }
@@ -32,7 +32,7 @@
             let bulletX = (player.xDirection == "left") ? player.x + leftOffset : player.x + rightOffset;
             let bulletY = player.y + topOffset;
 
-            bullets = [...bullets, {instance: bullet, x: bulletX, y: bulletY, direction: player.xDirection}];
+            bullets = [...bullets, {ownerId: player.id, instance: bullet, x: bulletX, y: bulletY, direction: player.xDirection}];
         })
     });
 
@@ -60,5 +60,5 @@
 <svelte:window on:keyup={handleKeyup}/>
 
 {#each bullets as bullet}
-    <BoxCollider showBoundaries={true} name={"bullet"} x1={bullet.x} y1={bullet.y} width={20} height={20}></BoxCollider>
+    <BoxCollider ownerId={bullet.ownerId} showBoundaries={true} name={"bullet"} x1={bullet.x} y1={bullet.y} width={20} height={20}></BoxCollider>
 {/each}

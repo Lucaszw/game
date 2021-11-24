@@ -10,7 +10,7 @@
     import standing from './animations/standing';
     import bullet from "./artillery/bullet";
 
-    let colliders = [];
+    let collision = {};
 	let keys = [];
     let jumpingTime = 0;
     let isShooting = false;
@@ -18,7 +18,6 @@
     export let player;
 
     $: keyDown = (keys.length > 0);
-    $: collision = MegamanAnimation.checkCollision(colliders, player);
     $: characterVelocity = {
         x: MegamanAnimation.characterVelocityX(),
         y: MegamanAnimation.characterVelocityY(jumpingTime)
@@ -53,8 +52,10 @@
     }
 
     renderable(async (props, dt) => {
-        let {canvas, context} = props;
-        colliders = props.colliders;
+        let {canvas, context, colliders} = props;
+        // console.log(_.map(colliders, "name"))
+        collision = MegamanAnimation.checkCollision(colliders, player);
+        if (collision.type == "bullet")
         context.resetTransform();
         await running.load(context);
         await standing.load(context);

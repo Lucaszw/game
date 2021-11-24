@@ -1,7 +1,6 @@
 <script>
-    import { props, renderable, colliders as collidersStore } from 'src/store.js';
-    import { onMount, onDestroy } from 'svelte';
-    import { writable } from 'svelte/store';
+    import { renderable, colliders as collidersStore } from 'src/store.js';
+    import { onDestroy } from 'svelte';
     import _ from "lodash";
 
     let context;
@@ -12,13 +11,15 @@
     export let width;
     export let height;
     export let showBoundaries;
-
+    export let name;
+    export let ownerId;
     class BoxCollider {
         constructor(showBoundaries = true) {
             $collidersStore = [...$collidersStore, this];
             this.showBoundaries = showBoundaries;
         }
-
+        get name() {return name}
+        get ownerId() {return ownerId}
         get x1() {return x1}
         get y1() {return y1}
         get x2() {return x1 + width}
