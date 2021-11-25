@@ -12,7 +12,7 @@
 		pixelRatio,
 		props,
 		time
-	} from '../store.js';
+	} from 'src/stores/engine.js';
 
 	export let killLoopOnError = true;
 	export let attributes = {};

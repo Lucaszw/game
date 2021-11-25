@@ -1,8 +1,6 @@
 <script>
-    import { renderable } from 'src/store.js';
+    import { renderable } from 'src/stores/engine.js';
     import _ from "lodash";
-    import MegamanAnimation from './MegamanAnimation.js';
-    import BulletController from "src/engine/weapons/bullets/BulletController.svelte";
     import BoxCollider from "src/engine/colliders/BoxCollider.svelte";
 
     import jumping from './animations/jumping';

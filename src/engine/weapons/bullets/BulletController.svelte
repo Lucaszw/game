@@ -1,5 +1,5 @@
 <script>
-    import { renderable } from 'src/store.js';
+    import { renderable } from 'src/stores/engine.js';
     import {socket as socketStore} from 'src/stores/socket.js';
 
     import BoxCollider from "src/engine/colliders/BoxCollider.svelte"

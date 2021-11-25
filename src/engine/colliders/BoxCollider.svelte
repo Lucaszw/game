@@ -1,5 +1,5 @@
 <script>
-    import { renderable, colliders as collidersStore } from 'src/store.js';
+    import { renderable, colliders as collidersStore } from 'src/stores/engine.js';
     import Animation from "../Animation";
     import { onDestroy, createEventDispatcher } from 'svelte';
     import _ from "lodash";

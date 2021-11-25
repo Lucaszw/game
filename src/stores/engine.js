@@ -1,6 +1,6 @@
 // https://svelte.dev/repl/79f4f3e0296a403ea988f74d332a7a4a?version=3.12.1
 
-import { getContext, onMount, onDestroy } from 'svelte';
+import { getContext, onMount } from 'svelte';
 import { writable, derived } from 'svelte/store';
 
 // Some props for the app

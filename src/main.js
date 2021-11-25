@@ -1,5 +1,5 @@
 import App from './App.svelte';
-import GameSocket from './store/socket.js';
+import GameSocket from './stores/socket.js';
 
 GameSocket.initialize();
 
