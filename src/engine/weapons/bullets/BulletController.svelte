@@ -1,5 +1,7 @@
 <script>
-    import { renderable, socket as socketStore } from 'src/store.js';
+    import { renderable } from 'src/store.js';
+    import {socket as socketStore} from 'src/stores/socket.js';
+
     import BoxCollider from "src/engine/colliders/BoxCollider.svelte"
 
     import _ from "lodash";
@@ -27,9 +29,9 @@
         }
     }
 
-    socketStore.subscribe((gameSocket) => {
-        gameSocket.socket.on("bullet-fired", (player2) => {
-            if (player2.id == gameSocket.socket.id) return;
+    socketStore.subscribe((socket) => {
+        socket.on("bullet-fired", (player2) => {
+            if (player2.id == socket.id) return;
             let bulletX = (player2.xDirection == "left") ? player2.x + leftOffset : player2.x + rightOffset;
             let bulletY = player2.y + topOffset;
             let bullet = new Bullet();

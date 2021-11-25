@@ -1,9 +1,7 @@
 import App from './App.svelte';
-import GameSocket from './services/socket.js';
-import {socket as socketStore} from './store.js';
+import GameSocket from './store/socket.js';
 
-const gameSocket = new GameSocket();
-socketStore.set(gameSocket);
+GameSocket.initialize();
 
 const app = new App({
 	target: document.body,

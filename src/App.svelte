@@ -5,7 +5,7 @@
 	import Canvas from './engine/Canvas.svelte';
 	import GroundCollider from './engine/GroundCollider.svelte';
 
-	import {players} from "./store"
+	import {players} from "./stores/socket";
 </script>
 
 <main>

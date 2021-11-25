@@ -1,26 +1,32 @@
 import {io} from "socket.io-client";
 import _ from "lodash";
-import {
-    players as playerStore,
-} from "../store.js";
+
+import { writable, derived } from 'svelte/store';
+
+export const socket = writable();
+export const players = writable([]);
 
 import {PlayerFactory, playerProperties} from "../engine/characters/player-factory.js"
 
-
 class GameSocket {
-    constructor() {
+    constructor() {}
+
+    initialize() {
         this.socket = io(`${process.env.HOST}:5002`);
         this.playerFactory = new PlayerFactory(this.socket);
 
         this.players = [];
-        playerStore.subscribe((players) => {
-            this.players = [...players];
+        players.subscribe((_players) => {
+            this.players = [..._players];
         })
+
         this.socket.on('connect', function (...args) {
             console.log("Connected! ", args, this);
         });
         this.socket.on('player-list-changed', this.playersChanged.bind(this));
         this.socket.on('player-updated', this.playerUpdated.bind(this));
+
+        socket.set(this.socket);
     }
 
     addPlayers(ids) {
@@ -47,7 +53,7 @@ class GameSocket {
         this.addPlayers(newPlayerIds);
         this.removePlayers(removedPlayerIds);
 
-        playerStore.set(this.players);
+        players.set(this.players);
     }
 
     playerUpdated(p) {
@@ -57,9 +63,9 @@ class GameSocket {
         for (let key of keys) {
             player[key] = p[key];
         }
-        playerStore.set(this.players);
+        players.set(this.players);
     }
 
 }
 
-export default GameSocket;
+export default new GameSocket();
