@@ -110,6 +110,7 @@
 
         if (player.takingDamage == true) {
             hit.draw(player);
+            player.hits += 1;
             return;
         }
 

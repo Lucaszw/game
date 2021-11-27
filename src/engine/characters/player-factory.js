@@ -10,7 +10,8 @@ export const playerProperties = {
     isShooting: false,
     takingDamage: false,
     isGuarding: false,
-    shieldHealth: 100
+    shieldHealth: 100,
+    hits: 0
 }
 
 export class PlayerFactory {
