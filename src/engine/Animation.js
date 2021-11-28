@@ -144,8 +144,9 @@ class Animation extends EE {
             return true;
         }
         for (let collider of colliders) {
+            if (!collider.direction) continue;
             if (!hitByCollider(collider)) continue;
-            collisions.push({id: collider.id, hit: true, region: "side", name: collider.name});
+            collisions.push({id: collider.id, hit: true, region: collider.direction, name: collider.name});
         }
         for (let collider of colliders) {
             if (!isInCollider(collider)) continue;
@@ -159,11 +160,11 @@ class Animation extends EE {
         return collisions;
     }
     
-    static characterVelocityX(...args) {
+    static getHeight(...args) {
         return 0;
     }
 
-    static characterVelocityY(...args) {
+    static getPushback(...args) {
         return 0;
     }
 

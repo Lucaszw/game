@@ -28,7 +28,7 @@ class Hit extends MegamanAnimation {
         let position = MegamanAnimation.spriteCoordinates(sheet.i, sheet.ii, image);
         // let canvas = this.context.canvas;
         let scale = this.getScaleFactor();
-
+        this.context.resetTransform();
         this.context.scale(scale/this.pixelsX, scale/this.pixelsY);
 
         if (player.xDirection == "left") {

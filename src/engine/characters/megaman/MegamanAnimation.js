@@ -24,14 +24,14 @@ class MegamanAnimation extends Animation {
         return 0;
     }
 
-    static characterVelocityY(jumpingTime) {
-        const v = MegamanAnimation.vf - jumpingTime;
-        if (v <= -20  || jumpingTime == 0 ) {
-            jumpingTime = 0;
-            return -MegamanAnimation.vf;
-        }
-        jumpingTime ++;
-        return MegamanAnimation.vf - jumpingTime;
+    static getHeight(t) {
+        const h = Math.sin(t);
+        return t > Math.PI ? 0 : h;
+    }
+
+    static getPushback(t) {
+        const x = Math.sin(t);
+        return t > Math.PI/2 ? 0 : x;
     }
 }
 

@@ -17,15 +17,17 @@
     let collisions = [];
 	let keys = [];
     let jumpingTime = 0;
+    let pushingTime = 0;
+    let vf = 200;
+    let h0 = 0;
     let playerCollider;
+    let acc = 20;
+    let bullet;
+
 
     export let player;
 
     $: keyDown = (keys.length > 0);
-    $: characterVelocity = {
-        x: MegamanAnimation.characterVelocityX(),
-        y: MegamanAnimation.characterVelocityY(jumpingTime)
-    };
 
     // Character state
     $: isRunning = (keyDown == true && (_.includes(keys, "a") || _.includes(keys, "d")));
@@ -40,7 +42,10 @@
         if (newKey == "w") {
             if (jumpingTime <= 0) {
                 jumpingTime = 1;
+                h0 = player.y;
                 player.y -= 1;
+                vf = 200;
+                acc = 20;
             }
         }
 
@@ -71,11 +76,25 @@
 
     })
 
-    renderable(async (props, dt) => {
+    const pushPlayer = _.debounce((bullet) => {
+        jumpingTime = 1;
+        pushingTime = 1;
+        h0 = player.y;
+        player.y -= 1;
+        acc = 30;
+        vf = player.hits;
+    }, 500, {leading: true, trailing: false});
+
+
+
+    renderable(async (props) => {
         let {canvas, context, colliders} = props;
         const collider = playerCollider.collider;
 
         collisions = collider ? MegamanAnimation.checkCollisions(colliders, collider) : [];
+
+        const newBullet = _.find(collisions, (c) => (c.name) == "bullet");
+        if (newBullet) {bullet = newBullet}
         
         await running.load(context);
         await standing.load(context);
@@ -84,33 +103,54 @@
         await shield.load(context);
         context.resetTransform();
 
-        let v = characterVelocity.y;
+        let dy0 = vf*MegamanAnimation.getHeight((jumpingTime-1)/(vf/acc));
+        let dy = vf*MegamanAnimation.getHeight(jumpingTime/(vf/acc));
+
+        let dx = vf*MegamanAnimation.getPushback(pushingTime/(vf/acc))/30;
+        let h = h0 - dy;
 
         player.isRunning = isRunning;
         player.isFallingOrJumping = isFallingOrJumping;
-        jumpingTime = (v == -MegamanAnimation.vf) ? 0 : MegamanAnimation.vf - v;
-        player.yDirection = (v < 0) ? "down" : "up";
+        player.yDirection = ((dy < dy0)|| jumpingTime <= 0) ? "down" : "up";
 
-        if (isFallingOrJumping) {
-            player.y -= v;
-        }
-        if (!isFallingOrJumping) {
+        if (isFallingOrJumping && dy > 0 ) {
+            player.y = h;
+            jumpingTime += 1;
+        } else if (isFallingOrJumping){
+            player.y +=  20;
+        } else {
+            jumpingTime = 0;
             const collision = _.find(collisions, c => (c.region == "top"));
             player.y = collision.y;
         }
 
-        if (isMovingLeft) player.x -= 10;
-        if (isMovingRight) player.x += 10;
+        if (isMovingLeft) {
+            player.x -= 10;
+        } else if (isMovingRight) {
+            player.x += 10;
+        } else if (pushingTime > 0 && bullet.region == "left") {
+            player.x -= dx;
+            pushingTime += 1;
+        } else if (pushingTime > 0 && bullet.region == "right") {
+            player.x += dx;
+            pushingTime += 1;
+        }
 
-        if (_.find(collisions, c => (c.name == "bullet"))) {
+        if (!isFallingOrJumping) {
+            vf = 200;
+            acc = 20;
+        }
+
+        if (newBullet) {
             if (!player.isGuarding || player.shieldHealth < 0) {
                 player.takingDamage = true
+                player.hits += 1;
+                pushPlayer(newBullet);
             }
         }
 
-        if (player.takingDamage == true) {
+        if (player.takingDamage) {
             hit.draw(player);
-            player.hits += 1;
             return;
         }
 
@@ -141,4 +181,4 @@
     startY={player.y}
     direction={player.xDirection}
 ></BulletController>
-<BoxCollider bind:this={playerCollider} id={player.id} showBoundaries={false} name={"megaman"} x1={player.x} y1={player.y} width={100} height={100}></BoxCollider>
+<BoxCollider bind:this={playerCollider} direction={player.xDirection} id={player.id} showBoundaries={false} name={"megaman"} x1={player.x} y1={player.y} width={100} height={100}></BoxCollider>

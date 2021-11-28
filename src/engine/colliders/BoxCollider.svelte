@@ -10,6 +10,7 @@
     export let collider;
 
     export let checkCollisions = false;
+    export let direction = null;
     export let x1;
     export let y1;
     export let width;
@@ -33,6 +34,7 @@
         get y2() {return y1 + height}
         get width() {return width}
         get height() {return height}
+        get direction() {return direction}
 
         draw() {
             const scale = Animation.getScaleFactor(context);

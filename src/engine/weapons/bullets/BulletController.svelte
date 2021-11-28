@@ -84,5 +84,17 @@
 <svelte:window on:keyup={handleKeyup}/>
 
 {#each bullets as bullet}
-    <BoxCollider id={bullet.id} checkCollisions={true} on:collision={handleCollision} ownerId={bullet.ownerId} showBoundaries={false} name={"bullet"} x1={bullet.x} y1={bullet.y} width={20} height={20}></BoxCollider>
+    <BoxCollider 
+        id={bullet.id} 
+        direction={bullet.direction} 
+        checkCollisions={true} 
+        on:collision={handleCollision} 
+        ownerId={bullet.ownerId} 
+        showBoundaries={false} 
+        name={"bullet"} 
+        x1={bullet.x} 
+        y1={bullet.y} 
+        width={20} 
+        height={20}
+    ></BoxCollider>
 {/each}
