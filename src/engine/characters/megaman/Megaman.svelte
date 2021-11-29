@@ -82,7 +82,7 @@
         h0 = player.y;
         player.y -= 1;
         acc = 30;
-        vf = player.hits;
+        vf = player.hits ** 1.3;
     }, 500, {leading: true, trailing: false});
 
 
