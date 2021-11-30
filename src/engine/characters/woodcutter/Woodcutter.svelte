@@ -106,7 +106,7 @@
         player.isRunning = isRunning;
         player.isFallingOrJumping = isFallingOrJumping;
         player.yDirection = ((dy < dy0)|| jumpingTime <= 0) ? "down" : "up";
-        window.player = player;
+
         if (player.y > 1000) {
             restorePlayer();
         }

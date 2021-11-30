@@ -36,6 +36,14 @@
 		});
 	}
 
+	function showDeaths(deaths) {
+		let s = "";
+		for (let i=0;i<deaths;i++) {
+			s += `x`;
+		}
+		return s;
+	}
+
 </script>
 
 <main>
@@ -53,7 +61,9 @@
 	</Canvas>
 	<div class="player-list">
 		{#each $players as player}
-			<b class:selected={player.isMyself}>{getPlayerName(player.id)}</b> {player.hits}<br/>
+			<b class:selected={player.isMyself}>{getPlayerName(player.id)}</b> 
+			{player.hits} {showDeaths(player.deaths)}
+			<br/>
 		{/each}
 	</div>
 </main>

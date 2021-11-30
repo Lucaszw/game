@@ -19,11 +19,11 @@ class SocketService {
     emitBulletFired(player) {
         this.io.emit("bullet-fired", player);
     }
-    emitPlayerPositionChanged(player) {
+    emitPlayerUpdated(player) {
         this.io.emit("player-updated", player);
     }
-    onPlayerPositionChanged(player) {
-        this.emitPlayerPositionChanged(player);
+    onPlayerUpdated(player) {
+        this.emitPlayerUpdated(player);
     }
     onBulletFired(player) {
         this.emitBulletFired(player);
@@ -31,7 +31,7 @@ class SocketService {
     async onConnection(socket) {
         console.log('a user connected');
         socket.on("disconnect", this.onDisconnect.bind(this));
-        socket.on('player-position-changed', this.onPlayerPositionChanged.bind(this));
+        socket.on('player-updated', this.onPlayerUpdated.bind(this));
         socket.on("bullet-fired", this.onBulletFired.bind(this));
         await this.emitPlayerList(socket);
     }

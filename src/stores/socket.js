@@ -57,13 +57,17 @@ class GameSocket {
     }
 
     playerUpdated(p) {
-        if (p.id == this.socket.id) return;
+        if (p.id == this.socket.id) {
+            // If the updated player is us, then only trigger a store update
+            // (single source of truth)
+            return players.set(this.players);
+        }
         const player = _.find(this.players, (_p) => _p.id === p.id);
         const keys = _.keys(playerProperties);
         for (let key of keys) {
             player[key] = p[key];
         }
-        players.set(this.players);
+        return players.set(this.players);
     }
 
 }

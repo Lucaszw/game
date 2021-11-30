@@ -11,7 +11,8 @@ export const playerProperties = {
     takingDamage: false,
     isGuarding: false,
     shieldHealth: 100,
-    hits: 0
+    hits: 0,
+    deaths: 0
 }
 
 export class PlayerFactory {
@@ -48,7 +49,7 @@ export class PlayerFactory {
 
     emitPlayerUpdated(proxy) {
         let player = JSON.parse(JSON.stringify(proxy));
-        this.socket.emit("player-position-changed", player);
+        this.socket.emit("player-updated", player);
     }
 
     fireBullet(proxy) {

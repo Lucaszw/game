@@ -78,7 +78,12 @@
         vf = player.hits ** 1.3;
     }, 500, {leading: true, trailing: false});
 
-
+    const restorePlayer = _.throttle(() => {
+        player.deaths += 1;
+        player.hits = 0;
+        player.x = 0;
+        player.y = 0;
+    }, 2000, {leading: false, trailing: true});
 
     renderable(async (props) => {
         let {canvas, context, colliders} = props;
@@ -106,6 +111,10 @@
         player.isFallingOrJumping = isFallingOrJumping;
         player.yDirection = ((dy < dy0)|| jumpingTime <= 0) ? "down" : "up";
 
+        if (player.y > 1000) {
+            restorePlayer();
+        }
+
         if (isFallingOrJumping && dy > 0 ) {
             player.y = h;
             jumpingTime += 1;
@@ -117,11 +126,7 @@
             player.y = collision.y;
         }
 
-        if (isMovingLeft) {
-            player.x -= 8;
-        } else if (isMovingRight) {
-            player.x += 8;
-        } else if (pushingTime > 0 && bullet.region == "left") {
+        if (pushingTime > 0 && bullet.region == "left") {
             player.x -= dx;
             pushingTime += 1;
         } else if (pushingTime > 0 && bullet.region == "right") {
@@ -129,6 +134,12 @@
             pushingTime += 1;
         }
 
+        if (isMovingLeft) {
+            player.x -= 8;
+        } else if (isMovingRight) {
+            player.x += 8;
+        } 
+        
         if (!isFallingOrJumping) {
             vf = 200;
             acc = 20;
