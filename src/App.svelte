@@ -14,9 +14,8 @@
 
 	const dictionaries = [adjectives, animals];
 
-	import JoyStick from "legacy/html5-joystick";
-
 	import {players} from "./stores/socket";
+	import {controller as controllerStore} from "./stores/controller";
 
 	function getHash(input){
 		var hash = 0, len = input.length;
@@ -37,12 +36,15 @@
 	}
 
 	onMount(() => {
-		var joy = new JoyStick('joy');
+		controllerStore.subscribe((controller) => {
+			controller.initialize("joy");
+		})
 	})
 
 </script>
 
 <main>
+	<div id="joy"></div>
 	<Canvas>
 		<Background></Background>
 		<GroundCollider></GroundCollider>
@@ -59,8 +61,6 @@
 			<b class:selected={player.isMyself}>{getPlayerName(player.id)}</b> {player.hits}<br/>
 		{/each}
 	</div>
-
-	<div id="joy" style="width:200px;height:200px;margin-bottom:20px;position:fixed;bottom:0px;"></div>
 </main>
 
 <style>
@@ -80,6 +80,14 @@
 	}
 	.selected {
 		color: green;
+	}
+
+	#joy {
+		width:200px;
+		height:200px;
+		margin-bottom:20px;
+		position:fixed;
+		bottom:0px;
 	}
 
 </style>

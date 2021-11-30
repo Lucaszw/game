@@ -1,5 +1,7 @@
 <script>
     import { renderable } from 'src/stores/engine.js';
+    import { controller as controllerStore} from "src/stores/controller.js";
+
     import _ from "lodash";
     import MegamanAnimation from './MegamanAnimation.js';
     import BulletController from "src/engine/weapons/bullets/BulletController.svelte";
@@ -23,24 +25,30 @@
     let playerCollider;
     let acc = 20;
     let bullet;
-
+    let controller;
 
     export let player;
 
-    $: keyDown = (keys.length > 0);
-
     // Character state
-    $: isRunning = (keyDown == true && (_.includes(keys, "a") || _.includes(keys, "d")));
+    $: isRunning = controller?.isMovingLeft() || controller?.isMovingRight();
     $: isFallingOrJumping = (collisions.length == 0) || !_.find(collisions, (c) => (c.region == "top"));
     $: isMovingLeft = isRunning && player.xDirection == "left";
     $: isMovingRight = isRunning && player.xDirection == "right";
 
-    function handleKeydown(event) {
-        const newKey = event.key;
-        keys = [...keys, newKey];
+    controllerStore.subscribe((_controller) => {
+        controller = _controller;
 
-        if (newKey == "w") {
-            if (jumpingTime <= 0) {
+        if (controller.isMovingLeft()) {
+            player.xDirection = "left";
+        }
+
+        if (controller.isMovingRight()) {
+            player.xDirection = "right";
+        }
+
+        if (controller.isMovingUp()) {
+            const groundCollision = _.find(collisions, c => (c.region == "top"));
+            if (groundCollision && jumpingTime <= 0) {
                 jumpingTime = 1;
                 h0 = player.y;
                 player.y -= 1;
@@ -49,24 +57,9 @@
             }
         }
 
-        if (newKey == "a") player.xDirection = "left";
-        if (newKey == "d") player.xDirection = "right";
-        if (newKey == " ") {
-            player.isShooting = true;
-            player.isGuarding = false;
-        }
-        if (newKey == ",") {
-            player.isShooting = false;
-            player.isGuarding = true;
-        }
-	}
-
-    function handleKeyup(event) {
-        const oldKey = event.key;
-        keys = [..._.without(keys, oldKey)]
-        if (oldKey == " ") player.isShooting = false;
-        if (oldKey == ",") player.isGuarding = false;
-    }
+        player.isGuarding = controller.keysDown["guard"];
+        player.isShooting = controller.keysDown["attack1"];
+    })
 
     onMount(() => {
         hit.on("animation:ended", () => {
@@ -168,8 +161,6 @@
     })
 
 </script>
-
-<svelte:window on:keydown={handleKeydown} on:keyup={handleKeyup}/>
 
 <BulletController 
     player={player}

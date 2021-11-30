@@ -1,7 +1,8 @@
 <script>
     import { renderable } from 'src/stores/engine.js';
     import {socket as socketStore} from 'src/stores/socket.js';
-
+    import {controller as controllerStore} from 'src/stores/controller.js';
+    
     import BoxCollider from "src/engine/colliders/BoxCollider.svelte"
 
     import _ from "lodash";
@@ -18,16 +19,16 @@
     export let direction;
     export let player;
 
-    function handleKeyup(event) {
-        const oldKey = event.key;
-        if (oldKey == " ") {
+
+    controllerStore.subscribe((controller) => {
+        if (controller.keysReleased["attack1"] && !controller.keysDown["guard"]) {
             let bulletX = (direction == "left") ? startX + leftOffset : startX + rightOffset;
             let bulletY = startY + topOffset;
             let bullet = new Bullet();
             bullets = [...bullets, {id: Math.random()*1e16, ownerId: player.id, instance: bullet, x: bulletX, y: bulletY, direction}];
             player.fireBullet();
         }
-    }
+    });
 
     socketStore.subscribe((socket) => {
         socket.on("bullet-fired", (player2) => {
@@ -80,8 +81,6 @@
     }
 
 </script>
-
-<svelte:window on:keyup={handleKeyup}/>
 
 {#each bullets as bullet}
     <BoxCollider 
