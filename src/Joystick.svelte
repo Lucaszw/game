@@ -18,10 +18,14 @@
         <div id="action-button" 
             on:mousedown={controller?.handleActionButton?.bind(controller)}
             on:mouseup={controller?.handleActionButton?.bind(controller)}
+            on:touchstart={controller?.handleActionButton?.bind(controller)}
+            on:touchend={controller?.handleActionButton?.bind(controller)}
         ></div>
         <div id="guard-button"
             on:mousedown={controller?.handleGuardButton?.bind(controller)}
             on:mouseup={controller?.handleGuardButton?.bind(controller)}
+            on:touchstart={controller?.handleGuardButton?.bind(controller)}
+            on:touchend={controller?.handleGuardButton?.bind(controller)}
         ></div>
     </div>
 </div>

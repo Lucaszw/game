@@ -93,13 +93,13 @@ class Controller {
     }
 
     handleActionButton(event) {
-        if (event.type == "mousedown") return this.handleKeyDown({map: "attack1"});
-        if (event.type == "mouseup") return this.handleKeyUp({map: "attack1"});
+        if (_.includes(["mousedown", "touchstart"],event.type)) return this.handleKeyDown({map: "attack1"});
+        if (_.includes(["mouseup", "touchend"],event.type)) return this.handleKeyUp({map: "attack1"});
     }
 
     handleGuardButton(event) {
-        if (event.type == "mousedown") return this.handleKeyDown({map: "guard"});
-        if (event.type == "mouseup") return this.handleKeyUp({map: "guard"});
+        if (_.includes(["mousedown", "touchstart"],event.type)) return this.handleKeyDown({map: "guard"});
+        if (_.includes(["mouseup", "touchend"],event.type)) return this.handleKeyUp({map: "guard"});
     }
 }
 
