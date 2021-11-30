@@ -16,7 +16,9 @@ class Standing extends MegamanAnimation {
                 borderWidth: 0,
                 spacingWidth: 0,
                 rows: 1,
-                columns: 1 
+                columns: 1,
+                offsetY: 20,
+                offsetX: 20
             },
             {
                 url: "/megaman/standing-gun.png", 
@@ -47,7 +49,7 @@ class Standing extends MegamanAnimation {
             x -= player.x*2 + 100;
         }
 
-        this.context.drawImage(image.image, -10,-10, image.spriteWidth, image.spriteHeight, x, player.y, 100, 100);
+        this.context.drawImage(image.image, 0, 0, image.spriteWidth, image.spriteHeight, x+image.offsetX, player.y+image.offsetY, 100, 100);
         this.context.resetTransform();
     }
 }

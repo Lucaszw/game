@@ -1,7 +1,7 @@
 <!-- https://svelte.dev/repl/79f4f3e0296a403ea988f74d332a7a4a?version=3.12.1 -->
 <script>
 	import { onMount, onDestroy, setContext } from 'svelte';
-
+	import _ from "lodash";
 	import {
 		key,
 		width,
@@ -21,6 +21,7 @@
 	let canvas;
 	let context;
 	let frame;
+	let minScreen;
 
 	let elementReady = () => {
 		// prepare canvas stores
@@ -40,6 +41,8 @@
 	}
 
 	onMount(() => {
+		minScreen = _.min([window.innerWidth, window.innerHeight]);
+
 		// start game loop
 		return createLoop((elapsed, dt) => {
 			time.set(elapsed);
@@ -81,6 +84,7 @@
 	function handleResize () {
 		width.set(window.innerWidth);
 		height.set(window.innerHeight);
+		minScreen = _.min([window.innerWidth, window.innerHeight]);
 		pixelRatio.set(window.devicePixelRatio);
 	}
 	
@@ -109,9 +113,9 @@
 
 <canvas
 	bind:this={canvas}
-	width={$height * $pixelRatio - padding}
-	height={$height * $pixelRatio - padding}
-	style="width: {$height - 2*padding}px; height: {$height - 2*padding}px; padding: {padding}px"
+	width={minScreen * $pixelRatio - padding}
+	height={minScreen * $pixelRatio - padding}
+	style="width: {minScreen - 2*padding}px; height: {minScreen - 2*padding}px; padding: {padding}px"
 />
 <svelte:window on:resize|passive={handleResize} />
 <slot></slot>

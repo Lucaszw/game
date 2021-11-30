@@ -7,6 +7,8 @@ import css from 'rollup-plugin-css-only';
 import { babel } from '@rollup/plugin-babel';
 import alias from '@rollup/plugin-alias';
 import replace from '@rollup/plugin-replace';
+import legacy from '@rollup/plugin-legacy';
+
 import ip from 'ip'
 import path from 'path';
 
@@ -47,7 +49,8 @@ export default {
 		}),
 		alias({
 			entries: [
-			  { find: 'src', replacement: path.resolve(__dirname, './src') }
+			  { find: 'src', replacement: path.resolve(__dirname, './src') },
+			  { find: 'legacy', replacement: path.resolve(__dirname, './node_modules') }
 			]
 		}),
 		svelte({
@@ -74,7 +77,9 @@ export default {
 			dedupe: ['svelte']
 		}),
 		commonjs(),
-
+		legacy({
+			'node_modules/html5-joystick/joy.js': 'JoyStick'
+		}),
 		// In dev mode, call `npm run start` once
 		// the bundle has been generated
 		!production && serve(),

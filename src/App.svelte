@@ -1,4 +1,6 @@
 <script>
+	import {onMount} from "svelte";
+
 	import Megaman from './engine/characters/megaman/Megaman.svelte';
 	import MegamanOther from './engine/characters/megaman/MegamanOther.svelte';
 	import Background from './engine/Background.svelte';
@@ -11,6 +13,8 @@
 	} from 'unique-names-generator';
 
 	const dictionaries = [adjectives, animals];
+
+	import JoyStick from "legacy/html5-joystick";
 
 	import {players} from "./stores/socket";
 
@@ -32,6 +36,10 @@
 		});
 	}
 
+	onMount(() => {
+		var joy = new JoyStick('joy');
+	})
+
 </script>
 
 <main>
@@ -51,6 +59,8 @@
 			<b class:selected={player.isMyself}>{getPlayerName(player.id)}</b> {player.hits}<br/>
 		{/each}
 	</div>
+
+	<div id="joy" style="width:200px;height:200px;margin-bottom:20px;position:fixed;bottom:0px;"></div>
 </main>
 
 <style>
