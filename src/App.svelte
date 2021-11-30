@@ -1,6 +1,8 @@
 <script>
 	import {onMount} from "svelte";
 
+	import Woodcutter from "./engine/characters/woodcutter/Woodcutter.svelte";
+
 	import Megaman from './engine/characters/megaman/Megaman.svelte';
 	import MegamanOther from './engine/characters/megaman/MegamanOther.svelte';
 	import Background from './engine/Background.svelte';
@@ -53,7 +55,7 @@
 		<GroundCollider></GroundCollider>
 		{#each $players as player}
 			{#if player.isMyself}
-				<Megaman {player}></Megaman>
+				<Woodcutter {player}></Woodcutter>
 			{:else}
 				<MegamanOther {player}></MegamanOther>
 			{/if}

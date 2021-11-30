@@ -10,16 +10,6 @@ class MegamanAnimation extends Animation {
         this.frameUpdateRate = 0;
     }
 
-
-    getSheet(image) {
-        if (image.rows > this.sheet.i
-            && image.columns > this.sheet.ii) return this.sheet;
-        
-        this.sheet.i = 0;
-        this.sheet.ii = 0;
-        return this.sheet;
-    }
-
     static characterVelocityX() {
         return 0;
     }

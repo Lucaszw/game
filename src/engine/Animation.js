@@ -52,8 +52,14 @@ class Animation extends EE {
 
     incrementSheet(image) {
         const {rows, columns} = image;
-        let ended = false;
+        if (this.ended) {
+            this.sheet.i = rows-1;
+            this.sheet.ii = columns-1;
+            return true;
+        }
 
+        let ended = false;
+        
         if (this.frameProgress != this.frameUpdateRate) {
             this.frameProgress += 1;
             return ended;
@@ -76,8 +82,19 @@ class Animation extends EE {
         }
         return ended;
     }
-
+    resetSheet() {
+        this.ended = false;
+        this.sheet.i = 0;
+        this.sheet.ii = 0;
+    }
+    
     getSheet(image) {
+        if (this.ended) {
+            this.sheet.i = image.rows-1;
+            this.sheet.ii = image.columns-1;
+            return this.sheet;
+        }
+
         if (image.rows > this.sheet.i
             && image.columns > this.sheet.ii) return this.sheet;
         
@@ -112,7 +129,7 @@ class Animation extends EE {
             ),
             y: (
                 borderWidth +
-                row * (spacingWidth + spriteHeight)
+                row * (spriteHeight)
             )
         }
     }
