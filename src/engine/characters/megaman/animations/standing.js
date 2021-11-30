@@ -30,7 +30,9 @@ class Standing extends MegamanAnimation {
                 offsetX: 0,
                 offsetY: 0,
                 rows: 1,
-                columns: 1
+                columns: 1,
+                offsetY: 20,
+                offsetX: 20
             }
         ]
     }
