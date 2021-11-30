@@ -6,6 +6,8 @@
 	import Background from './engine/Background.svelte';
 	import Canvas from './engine/Canvas.svelte';
 	import GroundCollider from './engine/GroundCollider.svelte';
+	import Joystick from './Joystick.svelte';
+
 	import {
 		uniqueNamesGenerator,
 		adjectives,
@@ -15,7 +17,6 @@
 	const dictionaries = [adjectives, animals];
 
 	import {players} from "./stores/socket";
-	import {controller as controllerStore} from "./stores/controller";
 
 	function getHash(input){
 		var hash = 0, len = input.length;
@@ -35,16 +36,10 @@
 		});
 	}
 
-	onMount(() => {
-		controllerStore.subscribe((controller) => {
-			controller.initialize("joy");
-		})
-	})
-
 </script>
 
 <main>
-	<div id="joy"></div>
+	<Joystick></Joystick>
 	<Canvas>
 		<Background></Background>
 		<GroundCollider></GroundCollider>
@@ -80,14 +75,6 @@
 	}
 	.selected {
 		color: green;
-	}
-
-	#joy {
-		width:200px;
-		height:200px;
-		margin-bottom:20px;
-		position:fixed;
-		bottom:0px;
 	}
 
 </style>

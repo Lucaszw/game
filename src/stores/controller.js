@@ -39,7 +39,7 @@ class Controller {
         document.addEventListener('keydown', this.handleKeyDown.bind(this));
         document.addEventListener('keyup', this.handleKeyUp.bind(this));
 
-        setInterval(this.checkJoystick.bind(this), 50);
+        setInterval(this.checkJoystick.bind(this), 10);
     }
 
 
@@ -75,13 +75,13 @@ class Controller {
     }
 
     handleKeyDown(event) {
-        const newKey = this.keyMap[event.key];
+        const newKey = event.map || this.keyMap[event.key];
         this.keysDown[newKey] = true;
         controller.set(this);
     }
 
     handleKeyUp(event) {
-        const oldKey = this.keyMap[event.key];
+        const oldKey = event.map || this.keyMap[event.key];
         this.keysDown[oldKey] = false;
         this.keysReleased[oldKey] = true;
         controller.set(this);
@@ -90,6 +90,16 @@ class Controller {
             this.keysReleased[oldKey] = false;
             controller.set(this);
         }, 40);
+    }
+
+    handleActionButton(event) {
+        if (event.type == "mousedown") return this.handleKeyDown({map: "attack1"});
+        if (event.type == "mouseup") return this.handleKeyUp({map: "attack1"});
+    }
+
+    handleGuardButton(event) {
+        if (event.type == "mousedown") return this.handleKeyDown({map: "guard"});
+        if (event.type == "mouseup") return this.handleKeyUp({map: "guard"});
     }
 }
 

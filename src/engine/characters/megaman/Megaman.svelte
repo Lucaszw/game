@@ -118,9 +118,9 @@
         }
 
         if (isMovingLeft) {
-            player.x -= 10;
+            player.x -= 8;
         } else if (isMovingRight) {
-            player.x += 10;
+            player.x += 8;
         } else if (pushingTime > 0 && bullet.region == "left") {
             player.x -= dx;
             pushingTime += 1;
