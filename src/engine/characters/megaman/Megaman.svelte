@@ -15,8 +15,8 @@
     import standing from './animations/standing';
     import hit from "./animations/hit";
 
-    import shield from "./artillery/shield";
-    import Bullet from "./artillery/bullet";
+    import shield from "./weapons/shield";
+    import Bullet from "./weapons/bullet";
     
 
     let collisions = [];

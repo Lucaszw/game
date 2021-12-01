@@ -9,7 +9,7 @@
     import standing from './animations/standing';
     import running from './animations/running';
     import jumping from './animations/jumping';
-    import shield from "./artillery/shield";
+    import shield from "./weapons/shield";
     import hit from "./animations/hit";
 
     import { onMount } from 'svelte';

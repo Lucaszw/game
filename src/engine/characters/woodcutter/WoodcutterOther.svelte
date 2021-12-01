@@ -8,7 +8,7 @@
     import standing from './animations/standing';
     import hit from './animations/hit';
 
-    import shield from './artillery/shield'
+    import shield from './weapons/shield'
     export let player;
 
     renderable(async (props, dt) => {
