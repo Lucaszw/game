@@ -9,20 +9,26 @@ class Standing extends WoodcutterAnimation {
                 name: "standing",
                 spriteWidth: 410,
                 spriteHeight: 410,
-                borderWidth: 0,
-                spacingWidth: 0,
                 rows: 1,
-                columns: 4,
-                offsetY: 0,
-                offsetX: 0
+                columns: 4
+            },
+            {
+                url: "/woodcutter/attack1.png",
+                name: "attack1",
+                spriteWidth: 273,
+                spriteHeight: 273,
+                rows: 1,
+                columns: 6
             }
         ]
-        this.frameUpdateRate = 5;
+        this.frameUpdateRate = 3;
     }
 
     async draw(player) {
         let x = player.x;
-        let image = this.images["standing"];
+        let image = this.images[player.isAttacking ? "attack1" : "standing"];
+        let stretchFactor = player.isAttacking ? 20 : 0;
+
         let canvas = this.context.canvas;
         let scale = this.getScaleFactor();
         let sheet = this.getSheet(image);
@@ -36,7 +42,7 @@ class Standing extends WoodcutterAnimation {
             x -= player.x*2 + 100;
         }
 
-        this.context.drawImage(image.image, position.x, position.y, image.spriteWidth, image.spriteHeight, x+image.offsetX, player.y+image.offsetY, 100, 100);
+        this.context.drawImage(image.image, position.x, position.y, image.spriteWidth, image.spriteHeight, x+image.offsetX, player.y+image.offsetY-stretchFactor, 100+stretchFactor, 100+stretchFactor);
         this.context.resetTransform();
         this.incrementSheet(image);
     }

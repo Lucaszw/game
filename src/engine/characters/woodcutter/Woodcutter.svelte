@@ -7,13 +7,13 @@
     import BoxCollider from "src/engine/colliders/BoxCollider.svelte";
 
     import standing from './animations/standing';
+    import running from './animations/running';
     import jumping from './animations/jumping';
     import shield from "./artillery/shield";
 
     import { onMount } from 'svelte';
 
     let collisions = [];
-	let keys = [];
     let jumpingTime = 0;
     let pushingTime = 0;
     let vf = 200;
@@ -55,7 +55,10 @@
         }
 
         player.isGuarding = controller.keysDown["guard"];
-        player.isShooting = controller.keysDown["attack1"];
+        if (!player.isAttacking && controller.keysDown["attack1"]) {
+            standing.resetSheet();
+        }
+        player.isAttacking = controller.keysDown["attack1"];
     })
 
     onMount(() => {
@@ -94,6 +97,7 @@
         await standing.load(context);
         await standing.load(context);
         await jumping.load(context);
+        await running.load(context);
 
         context.resetTransform();
 
@@ -158,7 +162,7 @@
             const imgName = player.yDirection == "up" ? "jumping-up" : "jumping-down";
             jumping.draw(player, imgName);
         }
-        if (isRunning && !isFallingOrJumping) standing.draw(player);
+        if (isRunning && !isFallingOrJumping) running.draw(player);
         if (!isRunning && !isFallingOrJumping) standing.draw(player);
         if (player.isGuarding) {
             if (player.shieldHealth > -50) {

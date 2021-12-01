@@ -2,9 +2,10 @@
 	import {onMount} from "svelte";
 
 	import Woodcutter from "./engine/characters/woodcutter/Woodcutter.svelte";
-
+	import WoodcutterOther from "./engine/characters/woodcutter/WoodcutterOther.svelte"
 	import Megaman from './engine/characters/megaman/Megaman.svelte';
 	import MegamanOther from './engine/characters/megaman/MegamanOther.svelte';
+
 	import Background from './engine/Background.svelte';
 	import Canvas from './engine/Canvas.svelte';
 	import GroundCollider from './engine/GroundCollider.svelte';
@@ -46,6 +47,11 @@
 		return s;
 	}
 
+	const playerTypes = {
+		"megaman": [Megaman, MegamanOther],
+		"woodcutter": [Woodcutter, WoodcutterOther]
+	}
+
 </script>
 
 <main>
@@ -55,16 +61,16 @@
 		<GroundCollider></GroundCollider>
 		{#each $players as player}
 			{#if player.isMyself}
-				<Woodcutter {player}></Woodcutter>
+				<svelte:component this={playerTypes[player.type][0]}  {player} />
 			{:else}
-				<MegamanOther {player}></MegamanOther>
+				<svelte:component this={playerTypes[player.type][1]}  {player} />
 			{/if}
 		{/each}
 	</Canvas>
 	<div class="player-list">
 		{#each $players as player}
 			<b class:selected={player.isMyself}>{getPlayerName(player.id)}</b> 
-			{player.hits} {showDeaths(player.deaths)}
+			{player.type} {showDeaths(player.deaths)}
 			<br/>
 		{/each}
 	</div>

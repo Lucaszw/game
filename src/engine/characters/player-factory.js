@@ -3,33 +3,37 @@ import _ from "lodash";
 export const playerProperties = {
     x: 0,
     y: 0,
-    xDirection: "left",
+    xDirection: "right",
     yDirection: "down",
     isRunning: false,
     isFallingOrJumping: false,
     isShooting: false,
+    isAttacking: false,
     takingDamage: false,
     isGuarding: false,
     shieldHealth: 100,
     hits: 0,
-    deaths: 0
+    deaths: 0,
+    type: null
 }
 
 export class PlayerFactory {
-    constructor(socket) {
+    constructor(socket, playerType) {
         this.socket = socket;
+        this.currentPlayerType = playerType;
     }
 
     createPlayer(id) {
         let factory = this;
         let player;
-        let defaults = _.extend({
+        let defaults = _.extend({}, playerProperties, {
             fireBullet: (...args) => {
                 factory.fireBullet(...[player, ...args]);
             },
             isMyself: this.socket.id == id,
-            id: id
-        }, playerProperties);
+            id: id,
+            type: this.currentPlayerType
+        });
 
         player = new Proxy(defaults, {
             get: function (target, key) {

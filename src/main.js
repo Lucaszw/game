@@ -1,7 +1,10 @@
 import App from './App.svelte';
 import GameSocket from './stores/socket.js';
 
-GameSocket.initialize();
+import randomInt from 'random-int';
+
+
+GameSocket.initialize(["woodcutter", "megaman"][randomInt(1)]);
 
 const app = new App({
 	target: document.body,

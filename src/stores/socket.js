@@ -11,9 +11,9 @@ import {PlayerFactory, playerProperties} from "../engine/characters/player-facto
 class GameSocket {
     constructor() {}
 
-    initialize() {
+    initialize(playerType) {
         this.socket = io(`${process.env.HOST}:5002`);
-        this.playerFactory = new PlayerFactory(this.socket);
+        this.playerFactory = new PlayerFactory(this.socket, playerType);
 
         this.players = [];
         players.subscribe((_players) => {
