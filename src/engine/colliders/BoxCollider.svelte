@@ -51,6 +51,7 @@
     }
 
     onDestroy(() => {
+        if (!collider) return;
         collider._id = Math.random()*1e16;
         _.remove($collidersStore, (c) => {
            return c._id == collider._id;

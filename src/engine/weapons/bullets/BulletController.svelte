@@ -2,7 +2,8 @@
     import { renderable } from 'src/stores/engine.js';
     import {socket as socketStore} from 'src/stores/socket.js';
     import {controller as controllerStore} from 'src/stores/controller.js';
-    
+    import WeaponController from 'src/stores/weapons.js';
+
     import BoxCollider from "src/engine/colliders/BoxCollider.svelte"
 
     import _ from "lodash";
@@ -15,15 +16,17 @@
     export let leftOffset;
     export let rightOffset;
     export let topOffset;
-    export let Bullet;
     export let direction;
     export let player;
 
-
     controllerStore.subscribe((controller) => {
         if (controller.keysReleased["attack1"] && !controller.keysDown["guard"]) {
+            const Bullet = WeaponController.getWeapon(player.type, "bullet");
+            if (!Bullet) return;
+
             let bulletX = (direction == "left") ? startX + leftOffset : startX + rightOffset;
             let bulletY = startY + topOffset;
+
             let bullet = new Bullet();
             bullets = [...bullets, {id: Math.random()*1e16, ownerId: player.id, instance: bullet, x: bulletX, y: bulletY, direction}];
             player.fireBullet();
@@ -35,8 +38,9 @@
             if (player2.id == socket.id) return;
             let bulletX = (player2.xDirection == "left") ? player2.x + leftOffset : player2.x + rightOffset;
             let bulletY = player2.y + topOffset;
-            let bullet = new Bullet();
+            const Bullet = WeaponController.getWeapon(player2.type, "bullet");
 
+            let bullet = new Bullet();
             bullets = [...bullets, {id: Math.random()*1e16, ownerId: player2.id, instance: bullet, x: bulletX, y: bulletY, direction: player2.xDirection}];
         })
     });

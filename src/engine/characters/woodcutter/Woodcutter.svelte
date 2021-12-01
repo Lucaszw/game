@@ -10,6 +10,7 @@
     import running from './animations/running';
     import jumping from './animations/jumping';
     import shield from "./artillery/shield";
+    import hit from "./animations/hit";
 
     import { onMount } from 'svelte';
 
@@ -62,9 +63,9 @@
     })
 
     onMount(() => {
-        // hit.on("animation:ended", () => {
-        //     player.takingDamage = false;
-        // });
+        hit.on("animation:ended", () => {
+            player.takingDamage = false;
+        });
         player.shieldHealth = 100;
 
     })
@@ -98,6 +99,7 @@
         await standing.load(context);
         await jumping.load(context);
         await running.load(context);
+        await hit.load(context);
 
         context.resetTransform();
 
@@ -154,7 +156,7 @@
         }
 
         if (player.takingDamage) {
-            standing.draw(player);
+            hit.draw(player);
             return;
         }
 
@@ -176,4 +178,4 @@
 
 </script>
 
-<BoxCollider bind:this={playerCollider} direction={player.xDirection} id={player.id} showBoundaries={true} name={"woodcutter"} x1={player.x} y1={player.y} width={100} height={100}></BoxCollider>
+<BoxCollider bind:this={playerCollider} direction={player.xDirection} id={player.id} showBoundaries={false} name={"woodcutter"} x1={player.x} y1={player.y} width={100} height={100}></BoxCollider>

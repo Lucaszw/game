@@ -33,7 +33,6 @@ class GameSocket {
         let newPlayers = []
         for (let playerId of ids) {
             const player = this.playerFactory.createPlayer(playerId);
-            console.log({player});
             newPlayers.push(player)
         }
 

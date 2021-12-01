@@ -1,6 +1,10 @@
 <script>
-    import { renderable } from 'src/stores/engine.js';
     import _ from "lodash";
+    import { onMount } from 'svelte';
+
+    import { renderable } from 'src/stores/engine.js';
+    import WeaponController from "src/stores/weapons.js";
+
     import BoxCollider from "src/engine/colliders/BoxCollider.svelte";
 
     import jumping from './animations/jumping';
@@ -8,8 +12,13 @@
     import standing from './animations/standing';
     import hit from './animations/hit';
     import shield from './artillery/shield'
+    import Bullet from './artillery/bullet'
 
     export let player;
+
+    onMount(()=> {
+        WeaponController.register("megaman", "bullet", Bullet);
+    });
 
     renderable(async (props, dt) => {
         let {canvas, context} = props;

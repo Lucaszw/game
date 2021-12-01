@@ -1,6 +1,4 @@
 <script>
-	import {onMount} from "svelte";
-
 	import Woodcutter from "./engine/characters/woodcutter/Woodcutter.svelte";
 	import WoodcutterOther from "./engine/characters/woodcutter/WoodcutterOther.svelte"
 	import Megaman from './engine/characters/megaman/Megaman.svelte';
@@ -10,6 +8,8 @@
 	import Canvas from './engine/Canvas.svelte';
 	import GroundCollider from './engine/GroundCollider.svelte';
 	import Joystick from './Joystick.svelte';
+
+	import BulletController from "src/engine/weapons/bullets/BulletController.svelte";
 
 	import {
 		uniqueNamesGenerator,
@@ -62,6 +62,15 @@
 		{#each $players as player}
 			{#if player.isMyself}
 				<svelte:component this={playerTypes[player.type][0]}  {player} />
+				<BulletController 
+					player={player}
+					leftOffset={0}
+					rightOffset={100}
+					topOffset={45}
+					startX={player.x}
+					startY={player.y}
+					direction={player.xDirection}
+				></BulletController>
 			{:else}
 				<svelte:component this={playerTypes[player.type][1]}  {player} />
 			{/if}
@@ -70,7 +79,7 @@
 	<div class="player-list">
 		{#each $players as player}
 			<b class:selected={player.isMyself}>{getPlayerName(player.id)}</b> 
-			{player.type} {showDeaths(player.deaths)}
+			{player.hits} {showDeaths(player.deaths)}
 			<br/>
 		{/each}
 	</div>

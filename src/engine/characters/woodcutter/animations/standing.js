@@ -21,7 +21,7 @@ class Standing extends WoodcutterAnimation {
                 columns: 6
             }
         ]
-        this.frameUpdateRate = 3;
+        this.frameUpdateRate = 4;
     }
 
     async draw(player) {

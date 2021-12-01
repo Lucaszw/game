@@ -6,8 +6,9 @@
     import jumping from './animations/jumping';
     import running from './animations/running';
     import standing from './animations/standing';
-    import shield from './artillery/shield'
+    import hit from './animations/hit';
 
+    import shield from './artillery/shield'
     export let player;
 
     renderable(async (props, dt) => {
@@ -16,14 +17,14 @@
         await running.load(context);
         await standing.load(context);
         await jumping.load(context);
-        // await hit.load(context);
+        await hit.load(context);
         await shield.load(context);
         
         const isRunning = player.isRunning;
         const isFallingOrJumping = player.isFallingOrJumping;
 
         if (player.takingDamage == true) {
-            // hit.draw(player);
+            hit.draw(player);
             return;
         }
 
