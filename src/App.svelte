@@ -10,6 +10,7 @@
 	import Joystick from './Joystick.svelte';
 
 	import BulletController from "src/engine/weapons/bullets/BulletController.svelte";
+	import MeleeWeapon from "src/engine/weapons/melee/MeleeWeapon.svelte";
 
 	import {
 		uniqueNamesGenerator,
@@ -71,6 +72,15 @@
 					startY={player.y}
 					direction={player.xDirection}
 				></BulletController>
+				<MeleeWeapon
+					player={player}
+					leftOffset={0}
+					rightOffset={100}
+					topOffset={45}
+					startX={player.x}
+					startY={player.y}
+					direction={player.xDirection}
+				></MeleeWeapon>
 			{:else}
 				<svelte:component this={playerTypes[player.type][1]}  {player} />
 			{/if}

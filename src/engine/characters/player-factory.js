@@ -30,6 +30,9 @@ export class PlayerFactory {
             fireBullet: (...args) => {
                 factory.fireBullet(...[player, ...args]);
             },
+            swingWeapon: (...args) => {
+                factory.swingWeapon(...[player, ...args]);
+            },
             isMyself: this.socket.id == id,
             id: id,
             type: this.currentPlayerType
@@ -59,6 +62,11 @@ export class PlayerFactory {
     fireBullet(proxy) {
         let player = JSON.parse(JSON.stringify(proxy));
         this.socket.emit("bullet-fired", player);
+    }
+
+    swingWeapon(proxy) {
+        let player = JSON.parse(JSON.stringify(proxy));
+        this.socket.emit("weapon-swung", player);
     }
 }
 

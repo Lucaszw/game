@@ -94,8 +94,10 @@
 
         collisions = collider ? MegamanAnimation.checkCollisions(colliders, collider) : [];
 
-        const newBullet = _.find(collisions, (c) => (c.name) == "bullet");
-        if (newBullet) {bullet = newBullet}
+        const newBullet = _.find(collisions, (c) => (c.category == "weapon"));
+        if (newBullet) {
+            bullet = newBullet;
+        }
         
         await running.load(context);
         await standing.load(context);
@@ -176,4 +178,15 @@
 
 </script>
 
-<BoxCollider bind:this={playerCollider} direction={player.xDirection} id={player.id} showBoundaries={false} name={"megaman"} x1={player.x} y1={player.y} width={100} height={100}></BoxCollider>
+<BoxCollider 
+    bind:this={playerCollider} 
+    direction={player.xDirection} 
+    id={player.id} 
+    showBoundaries={false} 
+    name={"megaman"} 
+    category={"player"}
+    x1={player.x} 
+    y1={player.y}
+    width={100} 
+    height={100}>
+</BoxCollider>

@@ -138,11 +138,12 @@ class Animation extends EE {
         let collisions = [];
         let hitByCollider = (collider) => {
             const isSelf = (collider.id == obj.id);
-            const isPlatform = (collider.name != "bullet" && collider.name != "megaman");
+            const isPlatform = (!collider.name || collider.category == "platform");
             const isOwner = ((collider.id == obj.ownerId) && obj.ownerId);
             const isChild = ((collider.ownerId == obj.id) && collider.ownerId);
             const isSibling = ((collider.ownerId == obj.ownerId) && collider.ownerId);
-
+            const areBothPlayers = ((collider.category == "player") && (obj.category == "player"));
+            if (areBothPlayers) return false;
             if (isSelf) return false;
             if (isPlatform) return false;
             if (isOwner || isChild || isSibling) return false;
@@ -152,6 +153,8 @@ class Animation extends EE {
             return false;
         }
         let isInCollider = (collider) => {
+            const areBothPlayers = ((collider.category == "player") && (obj.category == "player"));
+            if (areBothPlayers) return false;
             if (collider.name == obj.name) return false;
             if ((collider.id == obj.ownerId) && obj.ownerId) return false;
             if (collider.x1 > obj.x1+obj.width/2) return false;
@@ -163,7 +166,14 @@ class Animation extends EE {
         for (let collider of colliders) {
             if (!collider.direction) continue;
             if (!hitByCollider(collider)) continue;
-            collisions.push({id: collider.id, hit: true, region: collider.direction, name: collider.name});
+
+            collisions.push({
+                id: collider.id,
+                hit: true,
+                region: collider.direction,
+                name: collider.name,
+                category: collider.category
+            });
         }
         for (let collider of colliders) {
             if (!isInCollider(collider)) continue;
@@ -171,8 +181,20 @@ class Animation extends EE {
             let characterMidpoint = obj.y2*0.8;
             let characterTop = obj.y1;
 
-            if (collider.y1 <= characterBottom && collider.y1 > characterMidpoint) collisions.push({id: collider.id, hit: true, region: "top", y: collider.y1 - obj.height});
-            if (collider.y2 >= characterTop && collider.y2 < characterBottom ) collisions.push({id: collider.id, hit: true, region: "bottom", y: collider.y2}) ;
+            if (collider.y1 <= characterBottom && collider.y1 > characterMidpoint) collisions.push({
+                id: collider.id, 
+                hit: true, 
+                region: "top", 
+                y: collider.y1 - obj.height,
+                category: collider.category
+            });
+            if (collider.y2 >= characterTop && collider.y2 < characterBottom ) collisions.push({
+                id: collider.id, 
+                hit: true, 
+                region: "bottom", 
+                y: collider.y2,
+                category: collider.category
+            }) ;
         }
         return collisions;
     }

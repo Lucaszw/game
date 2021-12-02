@@ -94,7 +94,8 @@
         on:collision={handleCollision} 
         ownerId={bullet.ownerId} 
         showBoundaries={false} 
-        name={"bullet"} 
+        name={"bullet"}
+        category={"weapon"}
         x1={bullet.x} 
         y1={bullet.y} 
         width={20} 

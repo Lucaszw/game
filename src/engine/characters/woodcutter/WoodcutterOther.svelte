@@ -42,4 +42,13 @@
     })
 </script>
 
-<BoxCollider id={player.id} showBoundaries={false} name={"woodcutter"} x1={player.x} y1={player.y} width={100} height={100}></BoxCollider>
+<BoxCollider 
+    id={player.id} 
+    showBoundaries={false} 
+    name={"woodcutter"}
+    category={"player"}
+    x1={player.x} 
+    y1={player.y} 
+    width={100} 
+    height={100}>
+</BoxCollider>

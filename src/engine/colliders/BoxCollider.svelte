@@ -19,6 +19,8 @@
     export let name;
     export let ownerId;
     export let id;
+    export let category;
+
 
     class BoxCollider {
         constructor(showBoundaries = true) {
@@ -35,6 +37,7 @@
         get width() {return width}
         get height() {return height}
         get direction() {return direction}
+        get category() {return category}
 
         draw() {
             const scale = Animation.getScaleFactor(context);

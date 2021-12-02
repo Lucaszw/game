@@ -19,6 +19,9 @@ class SocketService {
     emitBulletFired(player) {
         this.io.emit("bullet-fired", player);
     }
+    emitWeaponSwung(player) {
+        this.io.emit("weapon-swung", player);
+    }
     emitPlayerUpdated(player) {
         this.io.emit("player-updated", player);
     }
@@ -28,10 +31,14 @@ class SocketService {
     onBulletFired(player) {
         this.emitBulletFired(player);
     }
+    onWeaponSwung(player) {
+        this.emitWeaponSwung(player);
+    }
     async onConnection(socket) {
         console.log('a user connected');
         socket.on("disconnect", this.onDisconnect.bind(this));
         socket.on('player-updated', this.onPlayerUpdated.bind(this));
+        socket.on('weapon-swung', this.onWeaponSwung.bind(this));
         socket.on("bullet-fired", this.onBulletFired.bind(this));
         await this.emitPlayerList(socket);
     }

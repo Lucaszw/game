@@ -1,6 +1,7 @@
 <script>
     import { renderable } from 'src/stores/engine.js';
     import { controller as controllerStore} from "src/stores/controller.js";
+    import WeaponController from "src/stores/weapons.js";
 
     import _ from "lodash";
     import WoodcutterAnimation from './WoodcutterAnimation.js';
@@ -12,6 +13,7 @@
     import shield from "./weapons/shield";
     import hit from "./animations/hit";
 
+    import Axe from './weapons/axe';
     import { onMount } from 'svelte';
 
     let collisions = [];
@@ -67,7 +69,7 @@
             player.takingDamage = false;
         });
         player.shieldHealth = 100;
-
+        WeaponController.register("woodcutter", "melee", Axe);
     })
 
     const pushPlayer = _.debounce((bullet) => {
@@ -92,7 +94,7 @@
 
         collisions = collider ? WoodcutterAnimation.checkCollisions(colliders, collider) : [];
 
-        const newBullet = _.find(collisions, (c) => (c.name) == "bullet");
+        const newBullet = _.find(collisions, (c) => (c.category == "weapon"));
         if (newBullet) {bullet = newBullet}
 
         await standing.load(context);
@@ -178,4 +180,15 @@
 
 </script>
 
-<BoxCollider bind:this={playerCollider} direction={player.xDirection} id={player.id} showBoundaries={false} name={"woodcutter"} x1={player.x} y1={player.y} width={100} height={100}></BoxCollider>
+<BoxCollider 
+    bind:this={playerCollider}
+    direction={player.xDirection}
+    id={player.id}
+    showBoundaries={false}
+    name={"woodcutter"}
+    category={"player"}
+    x1={player.x}
+    y1={player.y}
+    width={100}
+    height={100}>
+</BoxCollider>

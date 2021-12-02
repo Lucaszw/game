@@ -47,4 +47,13 @@
     })
 </script>
 
-<BoxCollider id={player.id} showBoundaries={false} name={"megaman"} x1={player.x} y1={player.y} width={100} height={100}></BoxCollider>
+<BoxCollider 
+    id={player.id} 
+    showBoundaries={false} 
+    name={"megaman"}
+    category={"player"}
+    x1={player.x}
+    y1={player.y}
+    width={100}
+    height={100}>
+</BoxCollider>

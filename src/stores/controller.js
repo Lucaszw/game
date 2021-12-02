@@ -55,14 +55,14 @@ class Controller {
     isMovingLeft() {
         let joystickX = this.joystick.GetX();
         let joystickMovingLeft = joystickX < 0;
-        let keyMovingLeft = (this.keysDown["left"] == true);
+        let keyMovingLeft = (this.keysDown["left"] != false);
         return (joystickMovingLeft || keyMovingLeft);
     }
 
     isMovingRight() {
         let joystickX = this.joystick.GetX();
         let joystickMovingRight = joystickX > 0;
-        let keyMovingRight = (this.keysDown["right"] == true);
+        let keyMovingRight = (this.keysDown["right"] != false);
         
         return (joystickMovingRight || keyMovingRight);
     }
@@ -70,13 +70,16 @@ class Controller {
     isMovingUp() {
         let joystickY = this.joystick.GetY();
         let joystickMovingUp = joystickY > 0;
-        let keyMovingUp = (this.keysDown["up"] == true);
+        let keyMovingUp = (this.keysDown["up"] != false);
         return (joystickMovingUp || keyMovingUp);
     }
 
     handleKeyDown(event) {
+        if (event.repeat) return;
+
         const newKey = event.map || this.keyMap[event.key];
-        this.keysDown[newKey] = true;
+        if (newKey == "attack1") console.log("attack key down")
+        this.keysDown[newKey] = Date.now();
         controller.set(this);
     }
 
