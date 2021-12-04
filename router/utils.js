@@ -1,4 +1,5 @@
 const fs = require('fs');
+const _ = require('lodash');
 
 const getAllFiles = function(dirPath, parentFolder, arrayOfFiles) {
     const files = fs.readdirSync(dirPath)

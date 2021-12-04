@@ -1,6 +1,6 @@
 const _ = require('lodash');
 const { Server } = require("socket.io");
-
+const BotController = require('./botController');
 class SocketService {
     constructor(server) {
         this.io = new Server(server, {
@@ -9,6 +9,7 @@ class SocketService {
             }
         });
         this.io.on('connection', this.onConnection.bind(this));
+        this.botController = new BotController(this.io);
     }
     async getUserIds() {
         return _.map(await this.io.fetchSockets(), "id");
@@ -36,14 +37,22 @@ class SocketService {
     }
     async onConnection(socket) {
         console.log('a user connected');
-        socket.on("disconnect", this.onDisconnect.bind(this));
+        socket.on("disconnect", this.onDisconnect.bind(this, socket));
         socket.on('player-updated', this.onPlayerUpdated.bind(this));
         socket.on('weapon-swung', this.onWeaponSwung.bind(this));
         socket.on("bullet-fired", this.onBulletFired.bind(this));
         await this.emitPlayerList(socket);
+
+        if (!this.botController.bot) {
+            this.botController.createBot(socket);
+        }
     }
     async onDisconnect(socket) {
-        console.log("a user disconnected");
+        console.log("user disconnected", socket.id);
+
+        if (socket.id == this.botController.bot.id) {
+            this.botController.removeBot(socket)
+        }
         await this.emitPlayerList(socket);
     }
 }

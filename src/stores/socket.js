@@ -5,8 +5,10 @@ import { writable, derived } from 'svelte/store';
 
 export const socket = writable();
 export const players = writable([]);
+export const bot = writable();
 
-import {PlayerFactory, playerProperties} from "../engine/characters/player-factory.js"
+import {PlayerFactory, playerProperties} from "src/engine/characters/player-factory.js"
+import {BotFactory, botProperties} from "src/engine/ai/bot-factory.js";
 
 class GameSocket {
     constructor() {}
@@ -14,10 +16,17 @@ class GameSocket {
     initialize(playerType) {
         this.socket = io(`${process.env.HOST}:5002`);
         this.playerFactory = new PlayerFactory(this.socket, playerType);
+        this.botFactory = new BotFactory(this.socket, playerType);
 
         this.players = [];
+        this.bot = null;
+
         players.subscribe((_players) => {
             this.players = [..._players];
+        })
+
+        bot.subscribe((_bot) => {
+            this.bot = _bot;
         })
 
         this.socket.on('connect', function (...args) {
@@ -25,7 +34,8 @@ class GameSocket {
         });
         this.socket.on('player-list-changed', this.playersChanged.bind(this));
         this.socket.on('player-updated', this.playerUpdated.bind(this));
-
+        this.socket.on('create-bot', this.createBot.bind(this));
+        this.socket.on("bot-destroyed", this.removeBot.bind(this));
         socket.set(this.socket);
     }
 
@@ -55,7 +65,21 @@ class GameSocket {
         players.set(this.players);
     }
 
+    botUpdated(b) {
+        if (b.id == this.socket.id) return bot.set(this.bot);
+
+        if (!this.bot) this.bot = this.botFactory.createBot(b.id);
+        const keys = _.keys(botProperties);
+        for (let key of keys) {
+            this.bot[key] = b[key];
+        }
+
+        return bot.set(this.bot);
+    }
+
     playerUpdated(p) {
+        if (p.isBot) return this.botUpdated(p);
+
         if (p.id == this.socket.id) {
             // If the updated player is us, then only trigger a store update
             // (single source of truth)
@@ -69,6 +93,15 @@ class GameSocket {
         return players.set(this.players);
     }
 
+    createBot(defaults) {
+        this.bot = this.botFactory.createBot(this.socket.id);
+        bot.set(this.bot);
+    }
+
+    removeBot() {
+        this.bot = null;
+        bot.set(this.bot);
+    }
 }
 
 export default new GameSocket();

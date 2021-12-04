@@ -23,10 +23,10 @@ export class PlayerFactory {
         this.currentPlayerType = playerType;
     }
 
-    createPlayer(id) {
+    createPlayer(id, properties=playerProperties) {
         let factory = this;
         let player;
-        let defaults = _.extend({}, playerProperties, {
+        let defaults = _.extend({}, properties, {
             fireBullet: (...args) => {
                 factory.fireBullet(...[player, ...args]);
             },

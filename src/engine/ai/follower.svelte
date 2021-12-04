@@ -7,13 +7,11 @@
     import LogScale from "log-scale"
 
     window.logScale = new LogScale(10, 20);
-    
-    export let x = 0;
-    export let y = 0;
-    export let width = 100;
-    export let height = 100;
+
+    export let bot = {x: 0, y: 0, width: 100, height: 100};
 
     let collisions = [];
+    let colliders = [];
     let players = []
     let playerCollider;
     let vx = 0;
@@ -28,16 +26,16 @@
     })
 
     const getClosestPlayer = (players) => {
-        return _.sortBy(players, [(p) => (Math.abs(p.x - x))])[0];
+        return _.sortBy(players, [(p) => (Math.abs(p.x - bot.x))])[0];
     };
 
     setInterval(() => {
         const player = getClosestPlayer(players);
-        const playerX = player?.x || x
+        const playerX = player?.x || bot.x
         const V = 5
-        vx = (playerX > x) ? 1 : vx
-        vx = (playerX < x) ? -1 : vx
-        vx = (playerX == x) ? 0 : vx
+        vx = (playerX > bot.x) ? 1 : vx
+        vx = (playerX < bot.x) ? -1 : vx
+        vx = (playerX == bot.x) ? 0 : vx
         vx *= V
     }, 100);
 
@@ -50,52 +48,51 @@
         vy = (isFallingOrJumping || index == 0) ? V : 0;
         index += 1;
         if (isJumping) {
-            isJumping = (y - vy <= peakHeight) ? false : true
+            isJumping = (bot.y - vy <= peakHeight) ? false : true
         }
         if (vy != 0 ) return setTimeout(jump.bind(this, peakHeight,index, isJumping), 100);
     }
 
     function isAtRightEdgeOfPlatform(groundCollider) {
-        return ((groundCollider?.x2 < x+width+vx) && (vx > 0));
+        return ((groundCollider?.x2 < bot.x+bot.width+vx) && (vx > 0));
     }
 
     function isAtLeftEdgeOfPlatform(groundCollider) {
-        return ((groundCollider?.x1 > x) && (vx < 0) );
+        return ((groundCollider?.x1 > bot.x) && (vx < 0) );
     }
 
     function findAlternativeCollider(groundCollider, onRight) {
         let colliderBelowMe = _.find(colliders, c => {
                 if (c.id == groundCollider.id) return false;
                 if (c.category != "platform") return false;
-                if (c.y1 < y + height) return false;
-                return onRight ? (x+vx < c.x1 ) : (x+vx > c.x2 );
+                if (c.y1 < bot.y + bot.height) return false;
+                return onRight ? (bot.x+vx < c.x1 ) : (bot.x+vx > c.x2 );
         });
 
         let colliderAboveMe = _.find(colliders, c => {
             if (c.id == groundCollider.id) return false;
             if (c.category != "platform") return false;
-            if (c.y1 > y) return false;
-            return onRight ? (x+vx < c.x1 ) : (x+vx > c.x2 );
+            if (c.y1 > bot.y) return false;
+            return onRight ? (bot.x+vx < c.x1 ) : (bot.x+vx > c.x2 );
         });
 
         return {colliderBelowMe, colliderAboveMe}
     }
 
     renderable(async (props) => {
-        let {canvas, context, colliders} = props;
+        let {canvas, context} = props;
         const collider = playerCollider.collider;
-
+        colliders = props.colliders;
         collisions = collider ? Animation.checkCollisions(colliders, collider) : [];
-        window.colliders = colliders
 
         context.resetTransform();
         const ground = _.find(collisions, c => (c.region == "top"))
         const groundCollider = ground?.collider;
 
         if (isFallingOrJumping ||  vy < 0) {
-            y +=  vy || vg;
+            bot.y +=  vy || vg;
         } else {
-            y = ground?.y || y;
+            bot.y = ground?.y || bot.y;
         }
 
         let atRightEdge = isAtRightEdgeOfPlatform(groundCollider);
@@ -103,11 +100,11 @@
 
         if (atRightEdge || atLeftEdge) {
             const { colliderAboveMe, colliderBelowMe } = findAlternativeCollider(groundCollider, atRightEdge);
-            if (colliderAboveMe) jump(y-50);
+            if (colliderAboveMe) jump(bot.y-50);
             if (!(colliderBelowMe || colliderAboveMe)) return;
         }
 
-        x += vx
+        bot.x += vx
     })
 
 
@@ -116,10 +113,10 @@
 <BoxCollider 
     bind:this={playerCollider}
     showBoundaries={true}
-    x1={x}
-    y1={y}
+    x1={bot.x}
+    y1={bot.y}
     name={"follower"} 
     category={"player"}
-    width={width} 
-    height={height}>
+    width={bot.width} 
+    height={bot.height}>
 </BoxCollider>

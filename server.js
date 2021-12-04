@@ -18,6 +18,11 @@ app.get('/users', wrap (async (rew, res) => {
     return await socketService.getUserIds();
 }));
 
+app.get('/bot', wrap (async (rew, res) => {
+  return socketService.botController.bot.toJSON();
+}));
+
+
 app.use(errorHandler);
 
 server.listen(5002, () => {
