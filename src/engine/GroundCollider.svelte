@@ -1,9 +1,9 @@
 <!-- Background from: https://imgur.com/t/super_nintendo/xAPngrS -->
 
 <script>
-    import BoxCollider from "./colliders/BoxCollider.svelte";
+    import Platform from "./environments/jungle/platform.svelte";
 </script>
 
-<BoxCollider showBoundaries={true} x1={20} y1={500} width={330} height={50}></BoxCollider>
-<BoxCollider showBoundaries={true} x1={250} y1={680} width={500} height={50}></BoxCollider>
-<BoxCollider showBoundaries={true} x1={650} y1={500} width={330} height={50}></BoxCollider>
+<Platform x={20} y={500} width={200}></Platform>
+<Platform x={250} y={680} width={500}></Platform>
+<Platform x={780} y={500} width={200}></Platform>
