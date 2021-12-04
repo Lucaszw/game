@@ -157,8 +157,8 @@ class Animation extends EE {
             if (areBothPlayers) return false;
             if (collider.name == obj.name) return false;
             if ((collider.id == obj.ownerId) && obj.ownerId) return false;
-            if (collider.x1 > obj.x1+obj.width/2) return false;
-            if (collider.x2 < obj.x1+obj.width/2) return false;
+            if (collider.x1 >= obj.x1+obj.width) return false;
+            if (collider.x2 <= obj.x1) return false;
             if (collider.y1 > obj.y2) return false;
             if (collider.y2 < obj.y1) return false;
             return true;
@@ -172,7 +172,8 @@ class Animation extends EE {
                 hit: true,
                 region: collider.direction,
                 name: collider.name,
-                category: collider.category
+                category: collider.category,
+                collider
             });
         }
         for (let collider of colliders) {
@@ -186,14 +187,16 @@ class Animation extends EE {
                 hit: true, 
                 region: "top", 
                 y: collider.y1 - obj.height,
-                category: collider.category
+                category: collider.category,
+                collider
             });
             if (collider.y2 >= characterTop && collider.y2 < characterBottom ) collisions.push({
                 id: collider.id, 
                 hit: true, 
                 region: "bottom", 
                 y: collider.y2,
-                category: collider.category
+                category: collider.category,
+                collider
             }) ;
         }
         return collisions;

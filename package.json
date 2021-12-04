@@ -32,6 +32,7 @@
     "html5-joystick": "^1.1.6",
     "ip": "^1.1.5",
     "lodash": "^4.17.21",
+    "log-scale": "^1.0.1",
     "nodemon": "^2.0.15",
     "random-int": "^3.0.0",
     "set-interval-async": "^2.0.3",

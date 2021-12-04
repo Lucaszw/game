@@ -3,6 +3,7 @@
 	import WoodcutterOther from "./engine/characters/woodcutter/WoodcutterOther.svelte"
 	import Megaman from './engine/characters/megaman/Megaman.svelte';
 	import MegamanOther from './engine/characters/megaman/MegamanOther.svelte';
+	import Follower from './engine/ai/follower.svelte';
 
 	import Background from './engine/Background.svelte';
 	import Canvas from './engine/Canvas.svelte';
@@ -85,6 +86,7 @@
 				<svelte:component this={playerTypes[player.type][1]}  {player} />
 			{/if}
 		{/each}
+		<Follower></Follower>
 	</Canvas>
 	<div class="player-list">
 		{#each $players as player}

@@ -28,7 +28,7 @@
                 {url: middleImages[1], name: "middle2", spriteWidth, spriteHeight},
                 {url: rightImage, name: "right", spriteWidth, spriteHeight}
             ]
-            this.tileNames = [];
+            this._tileNames = [];
         }
         drawTile(name, xOffset) {
             let image = this.images[name];
@@ -40,9 +40,9 @@
         getTileNames(i) {
             if (i == 0) return "left";
             if (i == numTiles-1) return "right"
-            if (this.tileNames[i]) return this.tileNames[i];
-            this.tileNames[i] = `middle${randomInt(1, 2)}`;
-            return this.tileNames[i];
+            if (this._tileNames[i]) return this._tileNames[i];
+            this._tileNames[i] = `middle${randomInt(1, 2)}`;
+            return this._tileNames[i];
         }
         draw() {
             // const image = this.images[imageName];
@@ -63,15 +63,18 @@
 
     renderable(async (props) => {
         const {context} = props;
-        await platform.load(props.context);
+        await platform.load(context);
         platform.draw();
     })
 </script>
 
 <BoxCollider 
+    id={Math.random()}
     showBoundaries={false}
     x1={x} 
     y1={y}
     width={pixelWidth} 
-    height={pixelHeight}>
+    height={pixelHeight}
+    category={"platform"}
+    >
 </BoxCollider>
