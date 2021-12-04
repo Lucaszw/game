@@ -27,8 +27,13 @@
 
     })
 
+    const getClosestPlayer = (players) => {
+        return _.sortBy(players, [(p) => (Math.abs(p.x - x))])[0];
+    };
+
     setInterval(() => {
-        const playerX = players?.[0]?.x || x
+        const player = getClosestPlayer(players);
+        const playerX = player?.x || x
         const V = 5
         vx = (playerX > x) ? 1 : vx
         vx = (playerX < x) ? -1 : vx
@@ -49,8 +54,6 @@
         }
         if (vy != 0 ) return setTimeout(jump.bind(this, peakHeight,index, isJumping), 100);
     }
-
-    window.jump = () => (console.log(y) & jump(y-120));
 
     function isAtRightEdgeOfPlatform(groundCollider) {
         return ((groundCollider?.x2 < x+width+vx) && (vx > 0));
