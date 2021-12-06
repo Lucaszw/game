@@ -70,9 +70,6 @@
 					leftOffset={0}
 					rightOffset={100}
 					topOffset={45}
-					startX={player.x}
-					startY={player.y}
-					direction={player.xDirection}
 				></BulletController>
 				<MeleeWeapon
 					player={player}

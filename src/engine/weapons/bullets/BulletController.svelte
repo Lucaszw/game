@@ -1,6 +1,6 @@
 <script>
     import { renderable } from 'src/stores/engine.js';
-    import {socket as socketStore} from 'src/stores/socket.js';
+    import {socket as socketStore, bot as botStore} from 'src/stores/socket.js';
     import {controller as controllerStore} from 'src/stores/controller.js';
     import WeaponController from 'src/stores/weapons.js';
 
@@ -11,24 +11,32 @@
     let bullets = [];
     let colliders = [];
 
-    export let startX;
-    export let startY;
     export let leftOffset;
     export let rightOffset;
     export let topOffset;
-    export let direction;
     export let player;
+
+    const fireBullet = (p) => {
+        const Bullet = WeaponController.getWeapon(p.type, "bullet");
+        let bulletX = (p.xDirection == "left") ? p.x + leftOffset : p.x + rightOffset;
+        let bulletY = p.y + topOffset;
+        let bullet = new Bullet();
+        const bulletParams = {
+            id: Math.random()*1e16,
+            ownerId: p.id,
+            instance: bullet,
+            x: bulletX,
+            y: bulletY,
+            direction: p.xDirection
+        };
+        bullets = [...bullets, bulletParams];
+    }
 
     controllerStore.subscribe((controller) => {
         if (controller.keysReleased["attack1"] && !controller.keysDown["guard"]) {
             const Bullet = WeaponController.getWeapon(player.type, "bullet");
             if (!Bullet) return;
-
-            let bulletX = (direction == "left") ? startX + leftOffset : startX + rightOffset;
-            let bulletY = startY + topOffset;
-
-            let bullet = new Bullet();
-            bullets = [...bullets, {id: Math.random()*1e16, ownerId: player.id, instance: bullet, x: bulletX, y: bulletY, direction}];
+            fireBullet(player);
             player.fireBullet();
         }
     });
@@ -36,12 +44,7 @@
     socketStore.subscribe((socket) => {
         socket.on("bullet-fired", (player2) => {
             if (player2.id == socket.id) return;
-            let bulletX = (player2.xDirection == "left") ? player2.x + leftOffset : player2.x + rightOffset;
-            let bulletY = player2.y + topOffset;
-            const Bullet = WeaponController.getWeapon(player2.type, "bullet");
-
-            let bullet = new Bullet();
-            bullets = [...bullets, {id: Math.random()*1e16, ownerId: player2.id, instance: bullet, x: bulletX, y: bulletY, direction: player2.xDirection}];
+            fireBullet(player2);
         })
     });
 
