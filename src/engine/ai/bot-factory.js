@@ -16,7 +16,7 @@ export class BotFactory extends PlayerFactory {
     }
     createBot(id) {
         // console.log("create bot...")
-        return this.createPlayer(id, botProperties);
+        return this.createPlayer('b'+id, botProperties);
     }
 }
 

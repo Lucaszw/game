@@ -153,8 +153,7 @@ class Animation extends EE {
             return false;
         }
         let isInCollider = (collider) => {
-            const areBothPlayers = ((collider.category == "player") && (obj.category == "player"));
-            if (areBothPlayers) return false;
+            if (collider.category != "platform") return false;
             if (collider.name == obj.name) return false;
             if ((collider.id == obj.ownerId) && obj.ownerId) return false;
             if (collider.x1 >= obj.x1+obj.width) return false;

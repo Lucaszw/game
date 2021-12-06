@@ -25,7 +25,7 @@
     let h0 = 0;
     let playerCollider;
     let acc = 20;
-    let bullet;
+    let attack;
     let controller;
 
     export let player;
@@ -94,9 +94,9 @@
 
         collisions = collider ? MegamanAnimation.checkCollisions(colliders, collider) : [];
 
-        const newBullet = _.find(collisions, (c) => (c.category == "weapon"));
-        if (newBullet) {
-            bullet = newBullet;
+        const newAttack = _.find(collisions, (c) => (c.category == "weapon"));
+        if (newAttack) {
+            attack = newAttack;
         }
         
         await running.load(context);
@@ -131,10 +131,10 @@
             player.y = collision.y;
         }
 
-        if (pushingTime > 0 && bullet.region == "left") {
+        if (pushingTime > 0 && attack.region == "left") {
             player.x -= dx;
             pushingTime += 1;
-        } else if (pushingTime > 0 && bullet.region == "right") {
+        } else if (pushingTime > 0 && attack.region == "right") {
             player.x += dx;
             pushingTime += 1;
         }
@@ -150,11 +150,11 @@
             acc = 20;
         }
 
-        if (newBullet) {
+        if (newAttack) {
             if (!player.isGuarding || player.shieldHealth < 0) {
                 player.takingDamage = true
                 player.hits += 1;
-                pushPlayer(newBullet);
+                pushPlayer();
             }
         }
 

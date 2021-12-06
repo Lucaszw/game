@@ -84,13 +84,13 @@
 					startY={player.y}
 					direction={player.xDirection}
 				></MeleeWeapon>
-			{:else}
+			{:else if player.type}
 				<svelte:component type={player.type} this={playerTypes[player.type][1]}  {player} />
 			{/if}
 		{/each}
 		{#if $bot?.isMyself}
 			<Follower bot={$bot}></Follower>
-		{:else if $bot}
+		{:else if $bot?.type}
 			<FollowerOther bot={$bot}></FollowerOther>
 		{/if}
 	</Canvas>
@@ -100,6 +100,11 @@
 			{player.hits} {showDeaths(player.deaths)}
 			<br/>
 		{/each}
+		{#if $bot}
+			<b class:selected={$bot?.isMyself}>{getPlayerName(1+$bot.id)}</b> 
+			{$bot.hits} {showDeaths($bot.deaths)}
+			<br/>
+		{/if}
 	</div>
 </main>
 

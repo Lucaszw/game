@@ -25,6 +25,9 @@ export class PlayerFactory {
     createPlayer(id, properties=playerProperties) {
         let factory = this;
         let player;
+
+        let offset = properties.isBot ? 'b' : '';
+
         let defaults = _.extend({}, properties, {
             fireBullet: (...args) => {
                 factory.fireBullet(...[player, ...args]);
@@ -32,7 +35,7 @@ export class PlayerFactory {
             swingWeapon: (...args) => {
                 factory.swingWeapon(...[player, ...args]);
             },
-            isMyself: this.socket.id == id,
+            isMyself: (offset+this.socket.id) == id,
             id: id
         });
 
@@ -42,7 +45,7 @@ export class PlayerFactory {
             },
             set: function(target, key, val) {
                 target[key] = val;
-                if (target["id"] == factory.socket.id) {
+                if (target["id"] == (offset + factory.socket.id)) {
                     factory.emitPlayerUpdated(player);
                 }
                 return true;

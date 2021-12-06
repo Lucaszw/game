@@ -1,7 +1,7 @@
 <script>
     import { renderable, colliders as collidersStore } from 'src/stores/engine.js';
     import Animation from "../Animation";
-    import { onDestroy, createEventDispatcher } from 'svelte';
+    import { onDestroy, onMount, createEventDispatcher } from 'svelte';
     import _ from "lodash";
 
     const dispatch = createEventDispatcher();
@@ -62,11 +62,15 @@
         $collidersStore = [...$collidersStore];
 	});
 
+    onMount(() => {
+        collider = new BoxCollider(showBoundaries);
+    })
+
     renderable(props => {
+        if (!collider) return;
+
         context = props.context;
         const colliders = props.colliders;
-
-        if (!collider) collider = new BoxCollider(showBoundaries);
 
         if (showBoundaries) {
             collider.draw(x1, y1, width, height);

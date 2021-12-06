@@ -16,9 +16,14 @@
 
     export let player;
     export let type="megaman";
+    export let handleHits = false;
     onMount(()=> {
         player.type = type;
         WeaponController.register("megaman", "bullet", Bullet);
+        hit.on("animation:ended", () => {
+            if (handleHits)
+                player.takingDamage = false;
+        });
     });
 
     renderable(async (props, dt) => {

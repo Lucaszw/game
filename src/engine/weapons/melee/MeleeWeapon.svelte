@@ -51,6 +51,8 @@
     socketStore.subscribe((socket) => {
         socket.on("weapon-swung", (player2) => {
             if (player2.id == socket.id) return;
+            if (player2.id == 'b'+socket.id) return;
+
             attack(player2);
         })
     });

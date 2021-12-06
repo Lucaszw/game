@@ -53,6 +53,7 @@
     socketStore.subscribe((socket) => {
         socket.on("bullet-fired", (player2) => {
             if (player2.id == socket.id) return;
+            if (player2.id == 'b'+socket.id) return;
             fireBullet(player2);
         })
     });
@@ -100,7 +101,7 @@
 
 {#each bullets as bullet}
     <BoxCollider 
-        id={bullet.id} 
+        id={bullet.id}
         direction={bullet.direction} 
         checkCollisions={true} 
         on:collision={handleCollision} 

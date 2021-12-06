@@ -66,7 +66,7 @@ class GameSocket {
     }
 
     botUpdated(b) {
-        if (b.id == this.socket.id) return bot.set(this.bot);
+        if (b.id == 'b' + this.socket.id) return bot.set(this.bot);
 
         if (!this.bot) this.bot = this.botFactory.createBot(b.id);
         const keys = _.keys(botProperties);
