@@ -1,14 +1,31 @@
 <script>
     import _ from "lodash";
+    import Woodcutter from "src/engine/characters/woodcutter/Woodcutter.svelte"
+    import Megaman from "src/engine/characters/megaman/Megaman.svelte";
+    import WoodcutterOther from "src/engine/characters/woodcutter/WoodcutterOther.svelte"
+    import MegamanOther from "src/engine/characters/megaman/MegamanOther.svelte"
     import BoxCollider from "src/engine/colliders/BoxCollider.svelte"
     import Animation from "src/engine/Animation"
     import {renderable} from "src/stores/engine"
 	import {players as playerStore} from "src/stores/socket"
     import LogScale from "log-scale"
 
-    window.logScale = new LogScale(10, 20);
+    export let bot = {
+        x: 0, 
+        y: 0, 
+        width: 100, 
+        height: 100,
+        isRunning: false,
+        isFallingOrJumping: false,
+        xDirection: "left"
+    };
 
-    export let bot = {x: 0, y: 0, width: 100, height: 100};
+    const playerTypes = {
+		"megaman": [Megaman, MegamanOther],
+		"woodcutter": [Woodcutter, WoodcutterOther]
+	}
+
+    const logScale = new LogScale(10, 20);
 
     let collisions = [];
     let colliders = [];
@@ -31,12 +48,16 @@
 
     setInterval(() => {
         const player = getClosestPlayer(players);
-        const playerX = player?.x || bot.x
-        const V = 5
-        vx = (playerX > bot.x) ? 1 : vx
-        vx = (playerX < bot.x) ? -1 : vx
-        vx = (playerX == bot.x) ? 0 : vx
+        const playerX = (player?.x || bot.x)
+        const V = 5;
+        const onLeft = (playerX > (bot.x - 100));
+        const onRight = (playerX < (bot.x + 100));
+
+        vx = onLeft ? 1 : vx
+        vx = onRight ? -1 : vx
+        vx = (onLeft && onRight) ? 0 : vx
         vx *= V
+        bot.xDirection = playerX > bot.x ? "right" : "left";
     }, 100);
 
     const dyUp = (x) => (-logScale.linearToLogarithmic(logScale.maxValue - x/10));
@@ -98,10 +119,15 @@
         let atRightEdge = isAtRightEdgeOfPlatform(groundCollider);
         let atLeftEdge = isAtLeftEdgeOfPlatform(groundCollider);
 
+        bot.isRunning = (vx != 0);
+        bot.isFallingOrJumping = isFallingOrJumping;
         if (atRightEdge || atLeftEdge) {
             const { colliderAboveMe, colliderBelowMe } = findAlternativeCollider(groundCollider, atRightEdge);
             if (colliderAboveMe) jump(bot.y-50);
-            if (!(colliderBelowMe || colliderAboveMe)) return;
+            if (!(colliderBelowMe || colliderAboveMe)) {
+                bot.isRunning = false;
+                return;
+            }
         }
 
         bot.x += vx
@@ -110,9 +136,10 @@
 
 </script>
 
+<svelte:component this={playerTypes["megaman"][1]}  player={bot} />
 <BoxCollider 
     bind:this={playerCollider}
-    showBoundaries={true}
+    showBoundaries={false}
     x1={bot.x}
     y1={bot.y}
     name={"follower"} 
