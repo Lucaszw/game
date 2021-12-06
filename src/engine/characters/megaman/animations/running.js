@@ -27,6 +27,7 @@ class Running extends MegamanAnimation {
                 columns: 10
             }
         ]
+        this.frameUpdateRate = 2;
     }
 
     async draw(player) {

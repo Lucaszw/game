@@ -15,8 +15,9 @@
     import Bullet from './weapons/bullet'
 
     export let player;
-
+    export let type="megaman";
     onMount(()=> {
+        player.type = type;
         WeaponController.register("megaman", "bullet", Bullet);
     });
 

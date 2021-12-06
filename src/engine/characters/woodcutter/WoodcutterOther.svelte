@@ -1,4 +1,5 @@
 <script>
+    import {onMount} from 'svelte';
     import { renderable } from 'src/stores/engine.js';
     import _ from "lodash";
     import BoxCollider from "src/engine/colliders/BoxCollider.svelte";
@@ -10,6 +11,10 @@
 
     import shield from './weapons/shield'
     export let player;
+    export let type="woodcutter";
+    onMount(() => {
+        player.type = type;
+    });
 
     renderable(async (props, dt) => {
         let {canvas, context} = props;

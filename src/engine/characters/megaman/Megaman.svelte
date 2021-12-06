@@ -7,7 +7,6 @@
     import WeaponController from "src/stores/weapons.js";
 
     import MegamanAnimation from './MegamanAnimation.js';
-    import BulletController from "src/engine/weapons/bullets/BulletController.svelte";
     import BoxCollider from "src/engine/colliders/BoxCollider.svelte";
 
     import jumping from './animations/jumping';
@@ -20,7 +19,6 @@
     
 
     let collisions = [];
-	let keys = [];
     let jumpingTime = 0;
     let pushingTime = 0;
     let vf = 200;
@@ -31,6 +29,7 @@
     let controller;
 
     export let player;
+    export let type = "megaman";
 
     // Character state
     $: isRunning = controller?.isMovingLeft() || controller?.isMovingRight();
@@ -65,6 +64,7 @@
     })
 
     onMount(() => {
+        player.type = type;
         hit.on("animation:ended", () => {
             player.takingDamage = false;
         });

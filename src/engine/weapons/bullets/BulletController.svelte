@@ -32,6 +32,15 @@
         bullets = [...bullets, bulletParams];
     }
 
+    botStore.subscribe((bot) => {
+        if (!bot?.bullet) return;
+        bot.bullet = false;
+        const Bullet = WeaponController.getWeapon(bot.type, "bullet");
+        if (!Bullet) return;
+        fireBullet(bot);
+        bot.fireBullet();
+    });
+
     controllerStore.subscribe((controller) => {
         if (controller.keysReleased["attack1"] && !controller.keysDown["guard"]) {
             const Bullet = WeaponController.getWeapon(player.type, "bullet");

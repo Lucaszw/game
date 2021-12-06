@@ -27,6 +27,7 @@
     let controller;
 
     export let player;
+    export let type="woodcutter";
 
     // Character state
     $: isRunning = controller?.isMovingLeft() || controller?.isMovingRight();
@@ -65,6 +66,7 @@
     })
 
     onMount(() => {
+        player.type = type;
         hit.on("animation:ended", () => {
             player.takingDamage = false;
         });

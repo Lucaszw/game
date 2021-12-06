@@ -18,9 +18,8 @@ export const playerProperties = {
 }
 
 export class PlayerFactory {
-    constructor(socket, playerType) {
+    constructor(socket) {
         this.socket = socket;
-        this.currentPlayerType = playerType;
     }
 
     createPlayer(id, properties=playerProperties) {
@@ -34,8 +33,7 @@ export class PlayerFactory {
                 factory.swingWeapon(...[player, ...args]);
             },
             isMyself: this.socket.id == id,
-            id: id,
-            type: this.currentPlayerType
+            id: id
         });
 
         player = new Proxy(defaults, {

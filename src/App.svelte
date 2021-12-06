@@ -1,4 +1,6 @@
 <script>
+	import randomInt from 'random-int';
+
 	import Woodcutter from "./engine/characters/woodcutter/Woodcutter.svelte";
 	import WoodcutterOther from "./engine/characters/woodcutter/WoodcutterOther.svelte"
 	import Megaman from './engine/characters/megaman/Megaman.svelte';
@@ -50,6 +52,8 @@
 		return s;
 	}
 
+	const playerType = ["megaman", "woodcutter"][randomInt(0,1)];
+
 	const playerTypes = {
 		"megaman": [Megaman, MegamanOther],
 		"woodcutter": [Woodcutter, WoodcutterOther]
@@ -64,7 +68,7 @@
 		<GroundCollider></GroundCollider>
 		{#each $players as player}
 			{#if player.isMyself}
-				<svelte:component this={playerTypes[player.type][0]}  {player} />
+				<svelte:component type={playerType} this={playerTypes[playerType][0]}  {player} />
 				<BulletController 
 					player={player}
 					leftOffset={0}
@@ -76,12 +80,12 @@
 					leftOffset={0}
 					rightOffset={100}
 					topOffset={45}
-					startX={player.x}
+					startX={player.x}a
 					startY={player.y}
 					direction={player.xDirection}
 				></MeleeWeapon>
 			{:else}
-				<svelte:component this={playerTypes[player.type][1]}  {player} />
+				<svelte:component type={player.type} this={playerTypes[player.type][1]}  {player} />
 			{/if}
 		{/each}
 		{#if $bot?.isMyself}

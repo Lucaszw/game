@@ -13,10 +13,10 @@ import {BotFactory, botProperties} from "src/engine/ai/bot-factory.js";
 class GameSocket {
     constructor() {}
 
-    initialize(playerType) {
+    initialize() {
         this.socket = io(`${process.env.HOST}:5002`);
-        this.playerFactory = new PlayerFactory(this.socket, playerType);
-        this.botFactory = new BotFactory(this.socket, playerType);
+        this.playerFactory = new PlayerFactory(this.socket);
+        this.botFactory = new BotFactory(this.socket);
 
         this.players = [];
         this.bot = null;

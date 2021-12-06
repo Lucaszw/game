@@ -16,6 +16,7 @@
         width: 100, 
         height: 100,
         isRunning: false,
+        isShooting: false,
         isFallingOrJumping: false,
         xDirection: "left"
     };
@@ -45,6 +46,11 @@
     const getClosestPlayer = (players) => {
         return _.sortBy(players, [(p) => (Math.abs(p.x - bot.x))])[0];
     };
+
+    setInterval(() => {
+        bot.isShooting = !bot.isShooting;
+        if (bot.isShooting) bot.bullet = true;
+    }, 3000);
 
     setInterval(() => {
         const player = getClosestPlayer(players);

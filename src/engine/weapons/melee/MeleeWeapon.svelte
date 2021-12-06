@@ -1,22 +1,14 @@
 <script>
-    import { renderable } from 'src/stores/engine.js';
+    import _ from "lodash";
     import {socket as socketStore} from 'src/stores/socket.js';
     import {controller as controllerStore} from 'src/stores/controller.js';
     import BoxCollider from "src/engine/colliders/BoxCollider.svelte"
     import WeaponController from "src/stores/weapons";
 
-    import _ from "lodash";
-    import bb from "bluebird";
-
-    let hitBoxes = [];
-    export let startX;
-    export let startY;
     export let leftOffset;
     export let rightOffset;
-    export let topOffset;
-    export let direction;
     export let player;
-
+    let hitBoxes = [];
     
     const removeHitbox = (hitBox) => {
         hitBox.id = hitBox.id || Math.random()*1e16
