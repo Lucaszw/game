@@ -1,14 +1,13 @@
 <script>
     import _ from "lodash";
-    import Woodcutter from "src/engine/characters/woodcutter/Woodcutter.svelte"
-    import Megaman from "src/engine/characters/megaman/Megaman.svelte";
-    import WoodcutterOther from "src/engine/characters/woodcutter/WoodcutterOther.svelte"
-    import MegamanOther from "src/engine/characters/megaman/MegamanOther.svelte"
+    import Megaman from "src/engine/characters/megaman/Animation.svelte"
     import BoxCollider from "src/engine/colliders/BoxCollider.svelte"
     import Animation from "src/engine/Animation"
     import {renderable} from "src/stores/engine"
 	import {players as playerStore} from "src/stores/socket"
-    import LogScale from "log-scale"
+
+    import JumpingBehaviour from "src/engine/behaviours/jumping"
+    import MovingBehaviour from "src/engine/behaviours/moving"
 
     export let bot = {
         x: 0, 
@@ -22,19 +21,18 @@
     };
 
     const playerTypes = {
-		"megaman": [Megaman, MegamanOther],
-		"woodcutter": [Woodcutter, WoodcutterOther]
+		"megaman": Megaman,
 	}
 
-    const logScaleY = new LogScale(10, 20);
-    const logScaleX = new LogScale(0,4);
+    const jumpingBehaviour = new JumpingBehaviour(bot);
+    jumpingBehaviour.vy = 20;
+
+    const movingBehaviour = new MovingBehaviour(bot);
 
     let collisions = [];
     let colliders = [];
     let players = []
     let playerCollider;
-    let vx = 0;
-    let vy = 20;
     let vg = 20;
     let beingPushed = false;
     let attack;
@@ -66,8 +64,10 @@
     setInterval(() => {
         bot.isShooting = !bot.isShooting;
         bot.isGuarding = !bot.isShooting;
-        if (bot.isShooting) bot.bullet = true;
-    }, 1500);
+        if (bot.isShooting) {
+            bot.bullet = true;
+        }
+    }, 500);
 
     setInterval(() => {
         let targetX;
@@ -83,66 +83,22 @@
         const onRight = (targetX < (bot.x + 100));
 
         if (onLeft) {
-            vx = isFallingOrJumping ? vx + V : V;
+            movingBehaviour.vx = isFallingOrJumping ? movingBehaviour.vx + V : V;
         } else if (onRight) {
-            vx = isFallingOrJumping ? vx - V : -V;
+            movingBehaviour.vx = isFallingOrJumping ? movingBehaviour.vx - V : -V;
         }
 
-        vx = (onLeft && onRight) ? 0 : vx
+        movingBehaviour.vx = (onLeft && onRight) ? 0 : movingBehaviour.vx
 
         bot.xDirection = targetX > bot.x ? "right" : "left";
-    }, 500);
-
-    const dyUp = (x) => (-logScaleY.linearToLogarithmic(logScaleY.maxValue - x/10));
-    const dyDown = (x) => (logScaleY.linearToLogarithmic(x/10));
-
-    const jump = (peakHeight=0, index=0, isJumping=true) => {
-        const V = isJumping ? dyUp(index) : dyDown(index)
-        
-        vy = (isFallingOrJumping || index == 0) ? V : 0;
-        index += 1;
-        if (isJumping) {
-            isJumping = (bot.y - vy <= peakHeight) ? false : true
-        }
-        if (vy != 0 ) return setTimeout(jump.bind(this, peakHeight,index, isJumping), 100);
-    }
-
-    const dyStart = (x) => (logScaleX.linearToLogarithmic(logScaleX.maxValue - x/10));
-    const dyEnd = (x) => (logScaleX.linearToLogarithmic(x/10));
-
-    const pushPlayer = () => {
-        if (beingPushed) return;
-        beingPushed = true;
-        let interval;
-        let index = 0;
-        const stop = () => {
-            beingPushed = false;
-            clearInterval(interval);
-            vx = 0;
-        }
-
-        jump(bot.y-bot.hits ** 0.7);
-
-        interval = setInterval(() => {
-            const V = (index < bot.hits ) ? dyStart(index) : dyEnd(bot.hits - index);
-
-            index ++;
-            let dv = V
-            dv *= (attack.region == "left") ? -1 : 1;
-            vx += dv;
-
-            if (index > bot.hits ** 2) stop();
-            if (V == 0) stop();
-        }, 1)
-
-    };
+    }, 100);
 
     function isAtRightEdgeOfPlatform(groundCollider) {
-        return ((groundCollider?.x2 < bot.x+bot.width+vx) && (vx > 0));
+        return ((groundCollider?.x2 < bot.x+bot.width+movingBehaviour.vx) && (movingBehaviour.vx > 0));
     }
 
     function isAtLeftEdgeOfPlatform(groundCollider) {
-        return ((groundCollider?.x1 > bot.x) && (vx < 0) );
+        return ((groundCollider?.x1 > bot.x) && (movingBehaviour.vx < 0) );
     }
 
     function findAlternativeCollider(groundCollider, onRight) {
@@ -150,14 +106,14 @@
                 if (c.id == groundCollider.id) return false;
                 if (c.category != "platform") return false;
                 if (c.y1 < bot.y + bot.height) return false;
-                return onRight ? (bot.x+vx < c.x1 ) : (bot.x+vx > c.x2 );
+                return onRight ? (bot.x+movingBehaviour.vx < c.x1 ) : (bot.x+movingBehaviour.vx > c.x2 );
         });
 
         let colliderAboveMe = _.find(colliders, c => {
             if (c.id == groundCollider.id) return false;
             if (c.category != "platform") return false;
             if (c.y1 > bot.y) return false;
-            return onRight ? (bot.x+vx < c.x1 ) : (bot.x+vx > c.x2 );
+            return onRight ? (bot.x+movingBehaviour.vx < c.x1 ) : (bot.x+movingBehaviour.vx > c.x2 );
         });
 
         return {colliderBelowMe, colliderAboveMe}
@@ -177,8 +133,8 @@
         const ground = _.find(collisions, c => (c.region == "top"))
         const groundCollider = ground?.collider;
 
-        if (isFallingOrJumping ||  vy < 0) {
-            bot.y +=  vy || vg;
+        if (isFallingOrJumping ||  jumpingBehaviour.vy < 0) {
+            bot.y +=  jumpingBehaviour.vy || vg;
         } else {
             bot.y = ground?.y || bot.y;
         }
@@ -186,34 +142,40 @@
         let atRightEdge = isAtRightEdgeOfPlatform(groundCollider);
         let atLeftEdge = isAtLeftEdgeOfPlatform(groundCollider);
 
-        bot.isRunning = (vx != 0);
+        bot.isRunning = (movingBehaviour.vx != 0);
         bot.isFallingOrJumping = isFallingOrJumping;
 
         if (newAttack) {
             if (!bot.isGuarding || bot.shieldHealth < 0) {
                 bot.takingDamage = true
                 bot.hits += 1;
-                pushPlayer();
+                setTimeout(() => {
+                    bot.isGuarding = true;
+                    if (!isFallingOrJumping)
+                        jumpingBehaviour.jump(bot.y - 50);
+                }, 1000);
+                jumpingBehaviour.jump(bot.y - bot.hits **0.7);
+                movingBehaviour.push(newAttack.region);
             }
         }
 
         if (atRightEdge || atLeftEdge) {
             const { colliderAboveMe, colliderBelowMe } = findAlternativeCollider(groundCollider, atRightEdge);
-            if (colliderAboveMe) jump(bot.y-50);
+            if (colliderAboveMe) jumpingBehaviour.jump(bot.y-50);
             if (!(colliderBelowMe || colliderAboveMe)) {
                 bot.isRunning = false;
-                if (atRightEdge) bot.x -= vx;
-                if (atLeftEdge) bot.x += vx;
+                if (atRightEdge) bot.x -= movingBehaviour.vx;
+                if (atLeftEdge) bot.x += movingBehaviour.vx;
             }
         }
 
-        bot.x += (vx < 0) ? _.max([vx, -20]) : _.min([vx, 20])
+        bot.x += (movingBehaviour.vx < 0) ? _.max([movingBehaviour.vx, -20]) : _.min([movingBehaviour.vx, 20])
     })
 
 
 </script>
 
-<svelte:component handleHits={true} this={playerTypes["megaman"][1]}  player={bot} />
+<svelte:component handleHits={true} this={playerTypes["megaman"]}  player={bot} />
 <BoxCollider
     bind:this={playerCollider}
     showBoundaries={false}

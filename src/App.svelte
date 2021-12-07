@@ -3,8 +3,8 @@
 
 	import Woodcutter from "./engine/characters/woodcutter/Woodcutter.svelte";
 	import WoodcutterOther from "./engine/characters/woodcutter/WoodcutterOther.svelte"
-	import Megaman from './engine/characters/megaman/Megaman.svelte';
-	import MegamanOther from './engine/characters/megaman/MegamanOther.svelte';
+	import Megaman from './engine/characters/megaman/Player.svelte';
+	import MegamanOther from './engine/characters/megaman/Animation.svelte';
 	import Follower from './engine/ai/Follower.svelte';
 	import FollowerOther from './engine/ai/FollowerOther.svelte';
 

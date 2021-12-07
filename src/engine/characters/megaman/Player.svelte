@@ -8,18 +8,13 @@
 
     import MegamanAnimation from './MegamanAnimation.js';
     import BoxCollider from "src/engine/colliders/BoxCollider.svelte";
+    import Megaman from "src/engine/characters/megaman/Animation.svelte"
+    import JumpingBehaviour from "src/engine/behaviours/jumping"
+    import MovingBehaviour from "src/engine/behaviours/moving"
 
-    import jumping from './animations/jumping';
-    import running from './animations/running';
-    import standing from './animations/standing';
-    import hit from "./animations/hit";
-
-    import shield from "./weapons/shield";
     import Bullet from "./weapons/bullet";
     
-
     let collisions = [];
-    let jumpingTime = 0;
     let pushingTime = 0;
     let vf = 200;
     let h0 = 0;
@@ -31,9 +26,13 @@
     export let player;
     export let type = "megaman";
 
+    const jumpingBehaviour = new JumpingBehaviour(player)
+    const movingBehaviour = new MovingBehaviour(player)
+    jumpingBehaviour.vy = 20;
+    jumpingBehaviour.vg = 20;
+
     // Character state
     $: isRunning = controller?.isMovingLeft() || controller?.isMovingRight();
-    $: isFallingOrJumping = (collisions.length == 0) || !_.find(collisions, (c) => (c.region == "top"));
     $: isMovingLeft = isRunning && player.xDirection == "left";
     $: isMovingRight = isRunning && player.xDirection == "right";
 
@@ -50,12 +49,8 @@
 
         if (controller.isMovingUp()) {
             const groundCollision = _.find(collisions, c => (c.region == "top"));
-            if (groundCollision && jumpingTime <= 0) {
-                jumpingTime = 1;
-                h0 = player.y;
-                player.y -= 1;
-                vf = 200;
-                acc = 20;
+            if (groundCollision) {
+                jumpingBehaviour.jump(player.y - 50);
             }
         }
 
@@ -65,20 +60,13 @@
 
     onMount(() => {
         player.type = type;
-        hit.on("animation:ended", () => {
-            player.takingDamage = false;
-        });
         player.shieldHealth = 100;
         WeaponController.register("megaman", "bullet", Bullet);
     })
 
-    const pushPlayer = _.debounce((bullet) => {
-        jumpingTime = 1;
-        pushingTime = 1;
-        h0 = player.y;
-        player.y -= 1;
-        acc = 30;
-        vf = player.hits ** 1.3;
+    const pushPlayer = _.debounce((attack) => {
+        movingBehaviour.push(attack.region);
+        jumpingBehaviour.jump(player.y - player.hits ** 1.2)
     }, 500, {leading: true, trailing: false});
 
     const restorePlayer = _.throttle(() => {
@@ -93,42 +81,27 @@
         const collider = playerCollider.collider;
 
         collisions = collider ? MegamanAnimation.checkCollisions(colliders, collider) : [];
+        player.isFallingOrJumping = (collisions.length == 0) || !_.find(collisions, (c) => (c.region == "top"));
 
+        const ground = _.find(collisions, c => (c.region == "top"))
         const newAttack = _.find(collisions, (c) => (c.category == "weapon"));
+
         if (newAttack) {
             attack = newAttack;
         }
         
-        await running.load(context);
-        await standing.load(context);
-        await jumping.load(context);
-        await hit.load(context);
-        await shield.load(context);
-        context.resetTransform();
-
-        let dy0 = vf*MegamanAnimation.getHeight((jumpingTime-1)/(vf/acc));
-        let dy = vf*MegamanAnimation.getHeight(jumpingTime/(vf/acc));
-
         let dx = vf*MegamanAnimation.getPushback(pushingTime/(vf/acc))/30;
-        let h = h0 - dy;
 
         player.isRunning = isRunning;
-        player.isFallingOrJumping = isFallingOrJumping;
-        player.yDirection = ((dy < dy0)|| jumpingTime <= 0) ? "down" : "up";
 
         if (player.y > 1000) {
             restorePlayer();
         }
 
-        if (isFallingOrJumping && dy > 0 ) {
-            player.y = h;
-            jumpingTime += 1;
-        } else if (isFallingOrJumping){
-            player.y +=  20;
+        if (player.isFallingOrJumping ||  jumpingBehaviour.vy < 0) {
+            player.y +=  jumpingBehaviour.vy || jumpingBehaviour.vg;
         } else {
-            jumpingTime = 0;
-            const collision = _.find(collisions, c => (c.region == "top"));
-            player.y = collision.y;
+            player.y = ground?.y || player.y;
         }
 
         if (pushingTime > 0 && attack.region == "left") {
@@ -143,41 +116,32 @@
             player.x -= 8;
         } else if (isMovingRight) {
             player.x += 8;
-        } 
-        
-        if (!isFallingOrJumping) {
-            vf = 200;
-            acc = 20;
         }
+
+        player.x += (movingBehaviour.vx < 0) ? _.max([movingBehaviour.vx, -20]) : _.min([movingBehaviour.vx, 20])
 
         if (newAttack) {
             if (!player.isGuarding || player.shieldHealth < 0) {
                 player.takingDamage = true
                 player.hits += 1;
-                pushPlayer();
+                pushPlayer(newAttack);
             }
         }
 
-        if (player.takingDamage) {
-            hit.draw(player);
-            return;
-        }
-
-        if (isFallingOrJumping) jumping.draw(player);
-        if (isRunning && !isFallingOrJumping) running.draw(player);
-        if (!isRunning && !isFallingOrJumping) standing.draw(player);
         if (player.isGuarding) {
             if (player.shieldHealth > -50) {
                 player.shieldHealth -= 1;
             }
-            shield.draw(player);
         } else {
             if (player.shieldHealth < 100) player.shieldHealth += 1;
         }
+
+
     })
 
 </script>
 
+<Megaman handleHits={true} player={player} />
 <BoxCollider 
     bind:this={playerCollider} 
     direction={player.xDirection} 
