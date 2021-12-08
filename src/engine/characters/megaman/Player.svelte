@@ -81,16 +81,16 @@
         const collider = playerCollider.collider;
 
         collisions = collider ? MegamanAnimation.checkCollisions(colliders, collider) : [];
-        player.isFallingOrJumping = (collisions.length == 0) || !_.find(collisions, (c) => (c.region == "top"));
-
         const ground = _.find(collisions, c => (c.region == "top"))
         const newAttack = _.find(collisions, (c) => (c.category == "weapon"));
+
+        player.isFallingOrJumping = (collisions.length == 0) || !ground;
 
         if (newAttack) {
             attack = newAttack;
         }
         
-        let dx = vf*MegamanAnimation.getPushback(pushingTime/(vf/acc))/30;
+        // let dx = vf*MegamanAnimation.getPushback(pushingTime/(vf/acc))/30;
 
         player.isRunning = isRunning;
 
@@ -102,14 +102,6 @@
             player.y +=  jumpingBehaviour.vy || jumpingBehaviour.vg;
         } else {
             player.y = ground?.y || player.y;
-        }
-
-        if (pushingTime > 0 && attack.region == "left") {
-            player.x -= dx;
-            pushingTime += 1;
-        } else if (pushingTime > 0 && attack.region == "right") {
-            player.x += dx;
-            pushingTime += 1;
         }
 
         if (isMovingLeft) {

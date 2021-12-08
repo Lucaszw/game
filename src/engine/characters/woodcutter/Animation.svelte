@@ -12,8 +12,13 @@
     import shield from './weapons/shield'
     export let player;
     export let type="woodcutter";
+    export let handleHits = false;
     onMount(() => {
         player.type = type;
+        hit.on("animation:ended", () => {
+            if (handleHits)
+                player.takingDamage = false;
+        });
     });
 
     renderable(async (props, dt) => {
