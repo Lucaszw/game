@@ -1,5 +1,6 @@
 import _ from "lodash";
 import EE from "eventemitter3";
+import {images as imageStore} from "src/stores/cache";
 
 const PIXELS_X = 1000;
 const PIXELS_Y = 1000;
@@ -10,6 +11,11 @@ class Animation extends EE {
     static pixelsY = PIXELS_Y;
     constructor() {
         super();
+        this.preloadedImages = {};
+        imageStore.subscribe((images) => {
+            this.preloadedImages = images;
+        });
+
         this.images = [];
         this.sheet = {
             i: 0,
@@ -35,12 +41,22 @@ class Animation extends EE {
         };
 
         let promises = this.imageURLS.map((imageInfo) => (new Promise((res, rej) => {
+            let image, imageURL;
             imageInfo = _.extend(_.clone(defaults), imageInfo);
-            const image = new Image();
-            const imageURL = imageInfo.url;
+
+            if (this.preloadedImages[imageInfo.url]) {
+                image = this.preloadedImages[imageInfo.url];
+                return res(_.extend({image}, imageInfo));
+            }
+
+            image = new Image();
+            imageURL = imageInfo.url;
             image.src = imageURL;
             image.onload = drawImage;
+            const _this = this;
             function drawImage() {
+                _this.preloadedImages[imageInfo.url] = image;
+                imageStore.set(_this.preloadedImages);
                 res (_.extend({image}, imageInfo));
             }
         })));
