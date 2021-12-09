@@ -5,7 +5,8 @@
   "scripts": {
     "build": "rollup -c",
     "dev": "node start.js",
-    "start": "sirv public --single --no-clear --port=5001 --host"
+    "serve": "sirv public --single --no-clear --port=5001 --host",
+    "start": "yarn serve & node server.js"
   },
   "devDependencies": {
     "@babel/core": "^7.16.0",
