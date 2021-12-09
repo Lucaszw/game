@@ -34,6 +34,8 @@
     $: isMovingRight = isRunning && player.xDirection == "right";
 
     controllerStore.subscribe((_controller) => {
+        if (!_controller) return;
+
         controller = _controller;
 
         if (controller.isMovingLeft()) {

@@ -30,6 +30,8 @@
     }
 
     controllerStore.subscribe(async (controller) => {
+        if (!controller) return;
+
         if (controller.keysDown["attack1"] && !controller.keysDown["guard"]) {
             const startTime = controller.keysDown["attack1"];
             let interval;

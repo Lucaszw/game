@@ -33,13 +33,14 @@ class Controller {
     initialize(id, keyMap) {
         if (this.joystick) return;
 
-        this.keyMap = _.extend({}, this.keyMap, this.keyMap);
+        this.keyMap = _.extend({}, this.keyMap, keyMap);
         this.joystick = new JoyStick(id);
 
         document.addEventListener('keydown', this.handleKeyDown.bind(this));
         document.addEventListener('keyup', this.handleKeyUp.bind(this));
 
         setInterval(this.checkJoystick.bind(this), 10);
+        controller.set(this);
     }
 
 
@@ -106,4 +107,4 @@ class Controller {
     }
 }
 
-controller.set(new Controller());
+export default new Controller();

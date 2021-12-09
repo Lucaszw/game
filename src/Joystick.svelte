@@ -1,13 +1,12 @@
 <script>
     import {controller as controllerStore} from "./stores/controller";
+    import Controller from "./stores/controller"
+
     import {onMount} from "svelte";
     let controller;
 
     onMount(() => {
-		controllerStore.subscribe((_controller) => {
-            controller = _controller;
-			controller.initialize("joy");
-		})
+        Controller.initialize("joy");
 	})
 
 </script>

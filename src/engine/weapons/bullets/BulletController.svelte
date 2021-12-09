@@ -42,6 +42,8 @@
     });
 
     controllerStore.subscribe((controller) => {
+        if (!controller) return;
+
         if (controller.keysReleased["attack1"] && !controller.keysDown["guard"]) {
             const Bullet = WeaponController.getWeapon(player.type, "bullet");
             if (!Bullet) return;

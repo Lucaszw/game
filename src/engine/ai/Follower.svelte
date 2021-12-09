@@ -67,7 +67,7 @@
         if (bot.isShooting) {
             bot.bullet = true;
         }
-    }, 500);
+    }, 1000);
 
     setInterval(() => {
         let targetX;
